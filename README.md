@@ -1,5 +1,18 @@
 # Disentangled Neural Retrieval
 
+<a href="./">
+<img alt="THUIR" src="https://img.shields.io/badge/Disentangle-NeuralIR-blueviolet">
+</a>
+<a href="./LICENSE">
+<img alt="License" src="https://img.shields.io/badge/License-MIT-blue.svg">
+</a>
+<a>
+<img alt="made-with-pytorch" src="https://img.shields.io/badge/Made%20with-Pytorch-red.svg">
+</a>
+<a>
+<img alt="code-size" src="https://img.shields.io/github/languages/code-size/jingtaozhan/disentangled-retriever?color=green">
+</a>
+
 This is the official repo for our paper [Disentangled Modeling of Domain and Relevance for Adaptable Dense Retrieval](https://arxiv.org/pdf/2208.05753.pdf). 
 
 ## Quick Tour
