@@ -2,7 +2,7 @@
 
 <p align="left">
     <a href="https://github.com/jingtaozhan/disentangled-retriever">
-    <img alt="THUIR" src="https://img.shields.io/badge/Disentangle-NeuralIR-blueviolet">
+    <img alt="Disentangle" src="https://img.shields.io/badge/NeuralIR-Disentangle-blueviolet">
     </a>
     <a href="https://github.com/jingtaozhan/disentangled-retriever/blob/main/LICENSE">
     <img alt="License" src="https://img.shields.io/badge/License-MIT-blue.svg">
