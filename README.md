@@ -1,19 +1,21 @@
 # Disentangled Neural Retrieval
 
 <p align="left">
-    <a href="./">
+    <a href="https://github.com/jingtaozhan/disentangled-retriever">
     <img alt="THUIR" src="https://img.shields.io/badge/Disentangle-NeuralIR-blueviolet">
     </a>
-    <a href="./LICENSE">
+    <a href="https://github.com/jingtaozhan/disentangled-retriever/blob/main/LICENSE">
     <img alt="License" src="https://img.shields.io/badge/License-MIT-blue.svg">
     </a>
     <a>
-    <a href="./">
+    <a href="https://pytorch.org">
     <img alt="made-with-pytorch" src="https://img.shields.io/badge/Made%20with-Pytorch-red.svg">
     </a>
     <a>
-    <a href="./">
+    <a href="https://github.com/jingtaozhan/disentangled-retriever">
     <img alt="code-size" src="https://img.shields.io/github/languages/code-size/jingtaozhan/disentangled-retriever?color=green">
+    </a>
+    <a href="https://github.com/jingtaozhan/disentangled-retriever">
     </a>
 </p>
 
