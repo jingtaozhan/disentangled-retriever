@@ -64,13 +64,26 @@ We have provided commands for reproducing the various results in our [paper](htt
 
 ## Unsupervised Domain Adaption: Training DAM
 
-We will release the code soon! Please stay tuned.
+- [Adapting to an unseen English domain](./examples/dense-mlm/english-marco/adapt_domain.md)
+    - Unsupervised Adaption yet high effectiveness.
+    - Take Lotte-Technology as an example.
+- [Adapting to an unseen Chinese domain](./examples/dense-mlm/chinese-dureader/adapt_domain.md)
+    - Unsupervised Adaption yet high effectiveness.
+    - Take CPR-Ecommerce as an example.
 
 ## Generic Relevance Estimation: Training REM 
 
-We will release the code soon! Please stay tuned.
+- [Training REM on MS MARCO](./examples/dense-mlm/english-marco/train_rem.md)
+    - Disentangled Finetuning
+    - Hard negatives, contrastive loss. or Cross-encoder scores, Margin-MSE loss.
+- [Training REM on Dureader](./examples/dense-mlm/chinese-dureader/train_rem.md)
+    - Disentangled Finetuning
+    - Inbatch negatives, contrastive loss.
 
 ## Training Dense Retrieval baselines
 
-We will release the code soon! Please stay tuned.
-
+- [Training Dense Retrieval baselines on MS MARCO](./examples/dense-mlm/english-marco/train_baseline.md)
+    - Hard negatives, contrastive loss.
+    - Cross-encoder scores, Margin-MSE loss.
+- [Training Dense Retrieval baselines on Dureader](./examples/dense-mlm/chinese-dureader/train_baseline.md)
+    - In batch negatives, contrastive loss.
