@@ -8,6 +8,14 @@ MS MARCO passage ranking dataset contains passages from web pages and queries fr
 sh ./examples/dense-mlm/english-marco/prepare_dataset/prepare_msmarco.sh
 ```
 
+```bash
+cd data/datasets/msmarco-passage
+wget https://huggingface.co/datasets/sentence-transformers/msmarco-hard-negatives/resolve/main/msmarco-hard-negatives.jsonl.gz
+wget https://huggingface.co/datasets/sentence-transformers/msmarco-hard-negatives/resolve/main/cross-encoder-ms-marco-MiniLM-L-6-v2-scores.pkl.gz
+cd -
+python ./examples/dense-mlm/english-marco/prepare_dataset/prepare_marco_hardneg.py data/datasets/msmarco-passage/msmarco-hard-negatives.jsonl.gz data/datasets/msmarco-passage/msmarco-hard-negatives.tsv
+```
+
 ## Lotte
 
 Lotte collects questions and answers posted on StackExchange and divides them into five topics including writing, recreation, science, technology, and lifestyle. It regards the accepted or upvoted answers as relevant.  **We use the five sub-datasets for out-of-domain evaluation.**
