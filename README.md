@@ -50,11 +50,11 @@ pip install --editable .
 
 We have provided commands for reproducing the various results in our [paper](https://arxiv.org/pdf/2208.05753.pdf).
 - [Reproducing results of Disentangled Dense Retrieval on English out-of-domain datasets](./examples/dense-mlm/english-marco/inference.md)
-    - Evaluating Disentangled Dense Retrieval on multiple datasets: TREC-Covid, Lotte-Writing, Lotte-Recreation, Lotte-Technology, Lotte-Lifestyle, and Lotte-Science.
-    - Evaluting both contrastively trained and distilled Disentangled Dense Retrieval models.
+    - On multiple datasets: TREC-Covid, Lotte-Writing, Lotte-Recreation, Lotte-Technology, Lotte-Lifestyle, and Lotte-Science.
+    - Evaluting both contrastively trained and distilled models.
 - [Reproducing results of Disentangled Dense Retrieval on Chinese out-of-domain datasets](./examples/dense-mlm/chinese-dureader/inference.md)
-    - Evaluating Disentangled Dense Retrieval on multiple datasets: TREC-Covid, Lotte-Writing, Lotte-Recreation, Lotte-Technology, Lotte-Lifestyle, and Lotte-Science.
-    - Evaluting both contrastively trained and distilled Disentangled Dense Retrieval models.
+    - On multiple datasets: CPR-Ecom, CPR-Video, CPR-Medical, cMedQAv2.
+    - Evaluting both contrastively trained and distilled models.
 - [Reproducing results of Dense Retrieval baselines on English out-of-domain datasets](./examples/dense-mlm/english-marco/inference_baseline.md)
     - Evaluating self-implemented Dense Retrieval baselines that follow the same finetuning settings as Disentangled Dense Retrieval. 
     - Evaluating (a) strong Dense Retrieval model(s) in the literature.
