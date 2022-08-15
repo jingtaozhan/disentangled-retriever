@@ -62,11 +62,11 @@ We have provided commands for reproducing the various results in our [paper](htt
     - Evaluating self-implemented Dense Retrieval baselines that follow the same finetuning settings as Disentangled Dense Retrieval. 
 
 
-## Domain Adaption: Unsupervisedly Training DAM
+## Unsupervised Domain Adaption: Training DAM
 
 We will release the code soon! Please stay tuned.
 
-## Relevance Estimation: Training REM 
+## Generic Relevance Estimation: Training REM 
 
 We will release the code soon! Please stay tuned.
 

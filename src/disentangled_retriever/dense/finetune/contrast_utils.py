@@ -95,7 +95,7 @@ class QDRelDataset(Dataset):
             rel_threshold=1, 
             verbose=True):
         '''
-        negative: choices from `inbatch', `random', or a path to a json file that contains \
+        negative: choices from `random' or a path to a json file that contains \
             the qid:neg_pid_lst  
         '''
         super().__init__()
