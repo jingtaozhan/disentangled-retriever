@@ -90,27 +90,27 @@ pip install --editable .
 
 ### Trained Models
 
-We provide the following trained models to facilitate reproducibility and reusage. You do not have to manually download these. They will be automatically downloaded at runtime.
+We provide the following trained models to facilitate reproducibility and reusage. You do not have to manually download these. **They will be automatically downloaded at runtime.**
 - Relevance Estimation Module (REM)
     - (English) Contrastively trained on MS MARCO Passage Ranking: https://huggingface.co/jingtao/REM-bert_base-dense-contrast-msmarco/resolve/main/lora192-pa4.zip
     - (English) Knowledge distilled on MS MARCO Passage Ranking: https://huggingface.co/jingtao/REM-bert_base-dense-distil-msmarco/resolve/main/lora192-pa4.zip
     - (Chinese) Contrastively trained on Dureader: https://huggingface.co/jingtao/REM-bert_base-dense-contrast-dureader/resolve/main/lora192-pa4.zip
     - (Chinese) Knowledge distilled on Dureader: https://huggingface.co/jingtao/REM-bert_base-dense-distil-dureader/resolve/main/lora192-pa4.zip
 - Domain Adaption Module (DAM)
-    - English test sets 
-        - MS MARCO Passage: [jingtao/DAM-bert_base-mlm-msmarco](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco)
-        - TREC-Covid: [jingtao/DAM-bert_base-mlm-msmarco-trec_covid](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco-trec_covid)
-        - Lotte-Writing: [jingtao/DAM-bert_base-mlm-msmarco-lotte_write_test](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco-lotte_write_test)
-        - Lotte-Recreation: [jingtao/DAM-bert_base-mlm-msmarco-lotte_rec_test](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco-lotte_rec_test)
-        - Lotte-Technology: [jingtao/DAM-bert_base-mlm-msmarco-lotte_tech_test](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco-lotte_tech_test)
-        - Lotte-Lifestyle: [jingtao/DAM-bert_base-mlm-msmarco-lotte_life_test](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco-lotte_life_test)
-        - Lotte-Science: [jingtao/DAM-bert_base-mlm-msmarco-lotte_sci_test](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco-lotte_sci_test)
-    - Chinese test sets
-        - Dureader: [jingtao/DAM-bert_base-mlm-dureader](https://huggingface.co/jingtao/DAM-bert_base-mlm-dureader)
-        - CPR-Ecommerce: [jingtao/DAM-bert_base-mlm-dureader-cpr_ecom](https://huggingface.co/jingtao/DAM-bert_base-mlm-dureader-cpr_ecom)
-        - CPR-Video: [jingtao/DAM-bert_base-mlm-dureader-cpr_video](https://huggingface.co/jingtao/DAM-bert_base-mlm-dureader-cpr_video)
-        - CPR-Medical: [jingtao/DAM-bert_base-mlm-dureader-cpr_medical](https://huggingface.co/jingtao/DAM-bert_base-mlm-dureader-cpr_medical)
-        - cMedQAv2: [jingtao/DAM-bert_base-mlm-dureader-cmedqav2](https://huggingface.co/jingtao/DAM-bert_base-mlm-dureader-cmedqav2)
+    - Trained on English test sets (Masked Language Modeling)
+        - Trained on MS MARCO Passage corpus: [jingtao/DAM-bert_base-mlm-msmarco](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco)
+        - Trained on TREC-Covid corpus: [jingtao/DAM-bert_base-mlm-msmarco-trec_covid](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco-trec_covid)
+        - Trained on Lotte-Writing corpus: [jingtao/DAM-bert_base-mlm-msmarco-lotte_write_test](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco-lotte_write_test)
+        - Trained on Lotte-Recreation corpus: [jingtao/DAM-bert_base-mlm-msmarco-lotte_rec_test](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco-lotte_rec_test)
+        - Trained on Lotte-Technology corpus: [jingtao/DAM-bert_base-mlm-msmarco-lotte_tech_test](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco-lotte_tech_test)
+        - Trained on Lotte-Lifestyle corpus: [jingtao/DAM-bert_base-mlm-msmarco-lotte_life_test](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco-lotte_life_test)
+        - Trained on Lotte-Science corpus: [jingtao/DAM-bert_base-mlm-msmarco-lotte_sci_test](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco-lotte_sci_test)
+    - Trained on Chinese test sets (Masked Language Modeling)
+        - Trained on Dureader corpus: [jingtao/DAM-bert_base-mlm-dureader](https://huggingface.co/jingtao/DAM-bert_base-mlm-dureader)
+        - Trained on CPR-Ecommerce corpus: [jingtao/DAM-bert_base-mlm-dureader-cpr_ecom](https://huggingface.co/jingtao/DAM-bert_base-mlm-dureader-cpr_ecom)
+        - Trained on CPR-Video corpus: [jingtao/DAM-bert_base-mlm-dureader-cpr_video](https://huggingface.co/jingtao/DAM-bert_base-mlm-dureader-cpr_video)
+        - Trained on CPR-Medical corpus: [jingtao/DAM-bert_base-mlm-dureader-cpr_medical](https://huggingface.co/jingtao/DAM-bert_base-mlm-dureader-cpr_medical)
+        - Trained on cMedQAv2 corpus: [jingtao/DAM-bert_base-mlm-dureader-cmedqav2](https://huggingface.co/jingtao/DAM-bert_base-mlm-dureader-cmedqav2)
 - Dense Retrieval Models
     - (English) Contrastively trained on MS MARCO Passage Ranking: [jingtao/Dense-bert_base-contrast-msmarco](https://huggingface.co/jingtao/Dense-bert_base-contrast-msmarco)
     - (English) Knowledge distilled on MS MARCO Passage Ranking: [jingtao/Dense-bert_base-distil-msmarco](https://huggingface.co/jingtao/Dense-bert_base-distil-msmarco)
