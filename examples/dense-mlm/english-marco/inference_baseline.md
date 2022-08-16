@@ -43,14 +43,163 @@ The output is:
 
 ### Lotte-Writing
 
+```bash
+data_dir="./data/datasets/lotte/writing/test"
+backbone_name_or_path="jingtao/Dense-bert_base-contrast-msmarco"
+output_dir="./data/dense-mlm/english-marco/inference_baseline/selfdr-contrast/lotte/writing/test"
+
+python -m torch.distributed.launch --nproc_per_node 4 \
+    -m disentangled_retriever.dense.evaluate.run_eval \
+    --backbone_name_or_path $backbone_name_or_path \
+    --corpus_path $data_dir/corpus.tsv \
+    --query_path $data_dir/query.forum \
+    --qrel_path $data_dir/qrels.forum \
+    --output_dir $output_dir \
+    --out_corpus_dir $output_dir/corpus \
+    --out_query_dir $output_dir/forum \
+    --per_device_eval_batch_size 48 \
+    --overwrite_output_dir \
+    --dataloader_num_workers 8 \
+    --pooling average \
+    --similarity_metric ip \
+    --topk 1000
+```
+
+The output is:
+```python
+{'NDCG@1': 0.4255, 'NDCG@3': 0.35952, 'NDCG@5': 0.34422, 'NDCG@10': 0.3522, 'NDCG@100': 0.41409}
+{'MAP@1': 0.10083, 'MAP@3': 0.1829, 'MAP@5': 0.21775, 'MAP@10': 0.24974, 'MAP@100': 0.27377}
+{'Recall@10': 0.3546, 'Recall@50': 0.49345, 'Recall@100': 0.54952, 'Recall@200': 0.59704, 'Recall@500': 0.65965, 'Recall@1000': 0.70716}
+{'P@1': 0.4255, 'P@3': 0.31917, 'P@5': 0.2592, 'P@10': 0.1775, 'P@100': 0.02928}
+{'MRR@10': 0.51825, 'MRR@100': 0.52447}
+```
+
 ### Lotte-Recreation
+
+```bash
+data_dir="./data/datasets/lotte/recreation/test"
+backbone_name_or_path="jingtao/Dense-bert_base-contrast-msmarco"
+output_dir="./data/dense-mlm/english-marco/inference_baseline/selfdr-contrast/lotte/recreation/test"
+
+python -m torch.distributed.launch --nproc_per_node 4 \
+    -m disentangled_retriever.dense.evaluate.run_eval \
+    --backbone_name_or_path $backbone_name_or_path \
+    --corpus_path $data_dir/corpus.tsv \
+    --query_path $data_dir/query.forum \
+    --qrel_path $data_dir/qrels.forum \
+    --output_dir $output_dir \
+    --out_corpus_dir $output_dir/corpus \
+    --out_query_dir $output_dir/forum \
+    --per_device_eval_batch_size 48 \
+    --overwrite_output_dir \
+    --dataloader_num_workers 8 \
+    --pooling average \
+    --similarity_metric ip \
+    --topk 1000
+```
+
+The output is:
+```python
+{'NDCG@1': 0.38611, 'NDCG@3': 0.33902, 'NDCG@5': 0.34039, 'NDCG@10': 0.35985, 'NDCG@100': 0.41873}
+{'MAP@1': 0.16066, 'MAP@3': 0.24234, 'MAP@5': 0.26534, 'MAP@10': 0.2839, 'MAP@100': 0.30083}
+{'Recall@10': 0.39424, 'Recall@50': 0.5361, 'Recall@100': 0.59236, 'Recall@200': 0.64393, 'Recall@500': 0.71522, 'Recall@1000': 0.76853}
+{'P@1': 0.38611, 'P@3': 0.25391, 'P@5': 0.18991, 'P@10': 0.11923, 'P@100': 0.01931}
+{'MRR@10': 0.46592, 'MRR@100': 0.47325}
+```
 
 ### Lotte-Technology
 
+```bash
+data_dir="./data/datasets/lotte/technology/test"
+backbone_name_or_path="jingtao/Dense-bert_base-contrast-msmarco"
+output_dir="./data/dense-mlm/english-marco/inference_baseline/selfdr-contrast/lotte/technology/test"
+
+python -m torch.distributed.launch --nproc_per_node 4 \
+    -m disentangled_retriever.dense.evaluate.run_eval \
+    --backbone_name_or_path $backbone_name_or_path \
+    --corpus_path $data_dir/corpus.tsv \
+    --query_path $data_dir/query.forum \
+    --qrel_path $data_dir/qrels.forum \
+    --output_dir $output_dir \
+    --out_corpus_dir $output_dir/corpus \
+    --out_query_dir $output_dir/forum \
+    --per_device_eval_batch_size 48 \
+    --overwrite_output_dir \
+    --dataloader_num_workers 8 \
+    --pooling average \
+    --similarity_metric ip \
+    --topk 1000
+```
+
+The output is:
+```python
+{'NDCG@1': 0.17914, 'NDCG@3': 0.15434, 'NDCG@5': 0.14315, 'NDCG@10': 0.14098, 'NDCG@100': 0.1947}
+{'MAP@1': 0.03221, 'MAP@3': 0.05599, 'MAP@5': 0.06513, 'MAP@10': 0.07525, 'MAP@100': 0.08977}
+{'Recall@10': 0.13565, 'Recall@50': 0.24957, 'Recall@100': 0.30783, 'Recall@200': 0.37202, 'Recall@500': 0.4593, 'Recall@1000': 0.52878}
+{'P@1': 0.17914, 'P@3': 0.14138, 'P@5': 0.11607, 'P@10': 0.08179, 'P@100': 0.01993}
+{'MRR@10': 0.26424, 'MRR@100': 0.27456}
+```
+
 ### Lotte-Lifestyle
+
+```bash
+data_dir="./data/datasets/lotte/lifestyle/test"
+backbone_name_or_path="jingtao/Dense-bert_base-contrast-msmarco"
+output_dir="./data/dense-mlm/english-marco/inference_baseline/selfdr-contrast/lotte/lifestyle/test"
+
+python -m torch.distributed.launch --nproc_per_node 4 \
+    -m disentangled_retriever.dense.evaluate.run_eval \
+    --backbone_name_or_path $backbone_name_or_path \
+    --corpus_path $data_dir/corpus.tsv \
+    --query_path $data_dir/query.forum \
+    --qrel_path $data_dir/qrels.forum \
+    --output_dir $output_dir \
+    --out_corpus_dir $output_dir/corpus \
+    --out_query_dir $output_dir/forum \
+    --per_device_eval_batch_size 48 \
+    --overwrite_output_dir \
+    --dataloader_num_workers 8 \
+    --pooling average \
+    --similarity_metric ip \
+    --topk 1000
+```
+
+The output is:
+```python
+{'NDCG@1': 0.43556, 'NDCG@3': 0.37723, 'NDCG@5': 0.36501, 'NDCG@10': 0.37494, 'NDCG@100': 0.46105}
+{'MAP@1': 0.12378, 'MAP@3': 0.21046, 'MAP@5': 0.24324, 'MAP@10': 0.27167, 'MAP@100': 0.30285}
+{'Recall@10': 0.38986, 'Recall@50': 0.57783, 'Recall@100': 0.65061, 'Recall@200': 0.71531, 'Recall@500': 0.79266, 'Recall@1000': 0.84597}
+{'P@1': 0.43556, 'P@3': 0.31968, 'P@5': 0.25654, 'P@10': 0.17118, 'P@100': 0.03137}
+{'MRR@10': 0.53946, 'MRR@100': 0.54631}
+```
 
 ### Lotte-Science
 
+```bash
+data_dir="./data/datasets/lotte/science/test"
+backbone_name_or_path="jingtao/Dense-bert_base-contrast-msmarco"
+output_dir="./data/dense-mlm/english-marco/inference_baseline/selfdr-contrast/lotte/science/test"
+
+python -m torch.distributed.launch --nproc_per_node 4 \
+    -m disentangled_retriever.dense.evaluate.run_eval \
+    --backbone_name_or_path $backbone_name_or_path \
+    --corpus_path $data_dir/corpus.tsv \
+    --query_path $data_dir/query.forum \
+    --qrel_path $data_dir/qrels.forum \
+    --output_dir $output_dir \
+    --out_corpus_dir $output_dir/corpus \
+    --out_query_dir $output_dir/forum \
+    --per_device_eval_batch_size 48 \
+    --overwrite_output_dir \
+    --dataloader_num_workers 8 \
+    --pooling average \
+    --similarity_metric ip \
+    --topk 1000
+```
+
+The output is:
+```python
+```
 
 ## Self-implemented Distilled Baseline
 
@@ -93,13 +242,163 @@ The output is:
 
 ### Lotte-Writing
 
+```bash
+data_dir="./data/datasets/lotte/writing/test"
+backbone_name_or_path="jingtao/Dense-bert_base-distil-msmarco"
+output_dir="./data/dense-mlm/english-marco/inference_baseline/selfdr-distil/lotte/writing/test"
+
+python -m torch.distributed.launch --nproc_per_node 4 \
+    -m disentangled_retriever.dense.evaluate.run_eval \
+    --backbone_name_or_path $backbone_name_or_path \
+    --corpus_path $data_dir/corpus.tsv \
+    --query_path $data_dir/query.forum \
+    --qrel_path $data_dir/qrels.forum \
+    --output_dir $output_dir \
+    --out_corpus_dir $output_dir/corpus \
+    --out_query_dir $output_dir/forum \
+    --per_device_eval_batch_size 48 \
+    --overwrite_output_dir \
+    --dataloader_num_workers 8 \
+    --pooling average \
+    --similarity_metric ip \
+    --topk 1000
+```
+
+The output is:
+```python
+{'NDCG@1': 0.462, 'NDCG@3': 0.40215, 'NDCG@5': 0.3851, 'NDCG@10': 0.39241, 'NDCG@100': 0.459}
+{'MAP@1': 0.11087, 'MAP@3': 0.20842, 'MAP@5': 0.2496, 'MAP@10': 0.28574, 'MAP@100': 0.31399}
+{'Recall@10': 0.39603, 'Recall@50': 0.55223, 'Recall@100': 0.59936, 'Recall@200': 0.64211, 'Recall@500': 0.69779, 'Recall@1000': 0.7338}
+{'P@1': 0.462, 'P@3': 0.36117, 'P@5': 0.2922, 'P@10': 0.1962, 'P@100': 0.03201}
+{'MRR@10': 0.5604, 'MRR@100': 0.5666}
+```
+
 ### Lotte-Recreation
+
+```bash
+data_dir="./data/datasets/lotte/recreation/test"
+backbone_name_or_path="jingtao/Dense-bert_base-distil-msmarco"
+output_dir="./data/dense-mlm/english-marco/inference_baseline/selfdr-distil/lotte/recreation/test"
+
+python -m torch.distributed.launch --nproc_per_node 4 \
+    -m disentangled_retriever.dense.evaluate.run_eval \
+    --backbone_name_or_path $backbone_name_or_path \
+    --corpus_path $data_dir/corpus.tsv \
+    --query_path $data_dir/query.forum \
+    --qrel_path $data_dir/qrels.forum \
+    --output_dir $output_dir \
+    --out_corpus_dir $output_dir/corpus \
+    --out_query_dir $output_dir/forum \
+    --per_device_eval_batch_size 48 \
+    --overwrite_output_dir \
+    --dataloader_num_workers 8 \
+    --pooling average \
+    --similarity_metric ip \
+    --topk 1000
+```
+
+The output is:
+```python
+{'NDCG@1': 0.41259, 'NDCG@3': 0.37043, 'NDCG@5': 0.37487, 'NDCG@10': 0.39874, 'NDCG@100': 0.46159}
+{'MAP@1': 0.17535, 'MAP@3': 0.26608, 'MAP@5': 0.29397, 'MAP@10': 0.31642, 'MAP@100': 0.33586}
+{'Recall@10': 0.44351, 'Recall@50': 0.59607, 'Recall@100': 0.65082, 'Recall@200': 0.70435, 'Recall@500': 0.75594, 'Recall@1000': 0.79749}
+{'P@1': 0.41259, 'P@3': 0.27855, 'P@5': 0.21029, 'P@10': 0.13352, 'P@100': 0.02121}
+{'MRR@10': 0.50322, 'MRR@100': 0.51024}
+```
 
 ### Lotte-Technology
 
+```bash
+data_dir="./data/datasets/lotte/technology/test"
+backbone_name_or_path="jingtao/Dense-bert_base-distil-msmarco"
+output_dir="./data/dense-mlm/english-marco/inference_baseline/selfdr-distil/lotte/technology/test"
+
+python -m torch.distributed.launch --nproc_per_node 4 \
+    -m disentangled_retriever.dense.evaluate.run_eval \
+    --backbone_name_or_path $backbone_name_or_path \
+    --corpus_path $data_dir/corpus.tsv \
+    --query_path $data_dir/query.forum \
+    --qrel_path $data_dir/qrels.forum \
+    --output_dir $output_dir \
+    --out_corpus_dir $output_dir/corpus \
+    --out_query_dir $output_dir/forum \
+    --per_device_eval_batch_size 48 \
+    --overwrite_output_dir \
+    --dataloader_num_workers 8 \
+    --pooling average \
+    --similarity_metric ip \
+    --topk 1000
+```
+
+The output is:
+```python
+{'NDCG@1': 0.21956, 'NDCG@3': 0.18469, 'NDCG@5': 0.17385, 'NDCG@10': 0.17548, 'NDCG@100': 0.23622}
+{'MAP@1': 0.0404, 'MAP@3': 0.07033, 'MAP@5': 0.08327, 'MAP@10': 0.09748, 'MAP@100': 0.11609}
+{'Recall@10': 0.17222, 'Recall@50': 0.29934, 'Recall@100': 0.36435, 'Recall@200': 0.42824, 'Recall@500': 0.52112, 'Recall@1000': 0.58595}
+{'P@1': 0.21956, 'P@3': 0.1665, 'P@5': 0.13962, 'P@10': 0.10304, 'P@100': 0.02391}
+{'MRR@10': 0.30952, 'MRR@100': 0.3195}
+```
+
 ### Lotte-Lifestyle
 
+```bash
+data_dir="./data/datasets/lotte/lifestyle/test"
+backbone_name_or_path="jingtao/Dense-bert_base-distil-msmarco"
+output_dir="./data/dense-mlm/english-marco/inference_baseline/selfdr-distil/lotte/lifestyle/test"
+
+python -m torch.distributed.launch --nproc_per_node 4 \
+    -m disentangled_retriever.dense.evaluate.run_eval \
+    --backbone_name_or_path $backbone_name_or_path \
+    --corpus_path $data_dir/corpus.tsv \
+    --query_path $data_dir/query.forum \
+    --qrel_path $data_dir/qrels.forum \
+    --output_dir $output_dir \
+    --out_corpus_dir $output_dir/corpus \
+    --out_query_dir $output_dir/forum \
+    --per_device_eval_batch_size 48 \
+    --overwrite_output_dir \
+    --dataloader_num_workers 8 \
+    --pooling average \
+    --similarity_metric ip \
+    --topk 1000
+```
+
+The output is:
+```python
+{'NDCG@1': 0.47552, 'NDCG@3': 0.41454, 'NDCG@5': 0.39704, 'NDCG@10': 0.40897, 'NDCG@100': 0.49467}
+{'MAP@1': 0.13378, 'MAP@3': 0.23258, 'MAP@5': 0.2699, 'MAP@10': 0.30296, 'MAP@100': 0.33521}
+{'Recall@10': 0.42452, 'Recall@50': 0.61207, 'Recall@100': 0.68221, 'Recall@200': 0.74736, 'Recall@500': 0.82103, 'Recall@1000': 0.86609}
+{'P@1': 0.47552, 'P@3': 0.35348, 'P@5': 0.28032, 'P@10': 0.18781, 'P@100': 0.03303}
+{'MRR@10': 0.57378, 'MRR@100': 0.58053}
+```
+
 ### Lotte-Science
+
+```bash
+data_dir="./data/datasets/lotte/science/test"
+backbone_name_or_path="jingtao/Dense-bert_base-distil-msmarco"
+output_dir="./data/dense-mlm/english-marco/inference_baseline/selfdr-distil/lotte/science/test"
+
+python -m torch.distributed.launch --nproc_per_node 4 \
+    -m disentangled_retriever.dense.evaluate.run_eval \
+    --backbone_name_or_path $backbone_name_or_path \
+    --corpus_path $data_dir/corpus.tsv \
+    --query_path $data_dir/query.forum \
+    --qrel_path $data_dir/qrels.forum \
+    --output_dir $output_dir \
+    --out_corpus_dir $output_dir/corpus \
+    --out_query_dir $output_dir/forum \
+    --per_device_eval_batch_size 48 \
+    --overwrite_output_dir \
+    --dataloader_num_workers 8 \
+    --pooling average \
+    --similarity_metric ip \
+    --topk 1000
+```
+
+The output is:
+```python
+```
 
 ## TAS-Balanced Model
 
