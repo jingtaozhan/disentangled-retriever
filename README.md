@@ -25,7 +25,7 @@ This is the official repo for our paper [Disentangled Modeling of Domain and Rel
 
 Common Dense Retrieval (DR) is vulnerable to domain shift: the trained DR models perform worse than traditional retrieval methods like BM25 in out-of-domain scenarios.
 
-In this work, we propose a novel Dense Retrieval framework named Disentangled Dense Retrieval (DDR) to support effective and flexible domain adaptation for DR models. 
+In this work, we propose **Disentangled Dense Retrieval (DDR)** to support effective and flexible domain adaptation. 
 DDR consists of a Relevance Estimation Module (REM) for modeling domain-invariant matching patterns and several Domain Adaption Modules (DAMs) for modeling domain-specific features of multiple target corpora to mitigate domain shift. 
 By making the REM and DAMs disentangled, DDR enables a flexible training paradigm in which REM is trained with supervision once and DAMs are trained with unsupervised data. 
 
@@ -33,7 +33,7 @@ Dense Retrieval   |  Disentangled Dense Retrieval
 :-------------------------:|:-------------------------:
 <img src="./figures/dr-modeling.png" height="80%">  | <img src="./figures/ddr-modeling.png" height="80%"> 
 
-The idea of DDR can date back to classic retrieval models in the pre-dense-retrieval era. Take BM25 as an example. It utilizes the same formula for estimating relevance scores across domains but measures word importance with corpus-specific IDF values. 
+The idea of DDR can date back to classic retrieval models in the pre-dense-retrieval era. BM25 utilizes the same formula for estimating relevance scores across domains but measures word importance with corpus-specific IDF values. 
 However, it does not exist in DR where the abilities of relevance estimation and domain modeling are jointly learned during training and entangled within the model parameters. 
 
 
