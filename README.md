@@ -43,8 +43,8 @@ This is the official repo for our paper [Disentangled Modeling of Domain and Rel
 Common Dense Retrieval (DR) is vulnerable to domain shift: the trained DR models perform worse than traditional retrieval methods like BM25 in out-of-domain scenarios.
 
 In this work, we propose **Disentangled Dense Retrieval (DDR)** to support effective and flexible domain adaptation. 
-DDR consists of a Relevance Estimation Module (REM) for modeling domain-invariant matching patterns and several Domain Adaption Modules (DAMs) for modeling domain-specific features of multiple target corpora to mitigate domain shift. 
-By making the REM and DAMs disentangled, DDR enables a flexible training paradigm in which REM is trained with supervision once and DAMs are trained with unsupervised data. 
+DDR consists of a Relevance Estimation Module (REM) for modeling domain-invariant matching patterns and several Domain Adaption Modules (DAMs) for modeling domain-specific features of multiple target corpora. 
+DDR enables a flexible training paradigm in which REM is trained with supervision once and DAMs are trained with unsupervised data. 
 
 Dense Retrieval   |  Disentangled Dense Retrieval
 :-------------------------:|:-------------------------:
@@ -85,7 +85,7 @@ pip install --editable .
 
 ### Trained Models
 
-We provide the following trained models to facilitate reproducibility and reusage.
+We provide the following trained models to facilitate reproducibility and reusage. You do not have to manually download these. They will be automatically downloaded at runtime.
 - Relevance Estimation Module (REM)
     - (English) Contrastively trained on MS MARCO Passage Ranking: https://huggingface.co/jingtao/REM-bert_base-dense-contrast-msmarco/resolve/main/lora192-pa4.zip
     - (English) Knowledge distilled on MS MARCO Passage Ranking: https://huggingface.co/jingtao/REM-bert_base-dense-distil-msmarco/resolve/main/lora192-pa4.zip
@@ -95,7 +95,7 @@ We provide the following trained models to facilitate reproducibility and reusag
     - English test sets 
         - MS MARCO Passage: [jingtao/DAM-bert_base-mlm-msmarco](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco)
         - TREC-Covid: [jingtao/DAM-bert_base-mlm-msmarco-trec_covid](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco-trec_covid)
-        - Lotte-Writing: [jjingtao/DAM-bert_base-mlm-msmarco-lotte_write_test](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco-lotte_write_test)
+        - Lotte-Writing: [jingtao/DAM-bert_base-mlm-msmarco-lotte_write_test](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco-lotte_write_test)
         - Lotte-Recreation: [jingtao/DAM-bert_base-mlm-msmarco-lotte_rec_test](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco-lotte_rec_test)
         - Lotte-Technology: [jingtao/DAM-bert_base-mlm-msmarco-lotte_tech_test](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco-lotte_tech_test)
         - Lotte-Lifestyle: [jingtao/DAM-bert_base-mlm-msmarco-lotte_life_test](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco-lotte_life_test)
@@ -118,8 +118,10 @@ from transformers import AutoConfig, AutoTokenizer
 from disentangled_retriever.dense.modeling import AutoDenseModel
 
 # This is the Relevance Estimation Module (REM) contrastively trained on MS MARCO
+# It can be used in various English domains.
 REM_URL = "https://huggingface.co/jingtao/REM-bert_base-dense-contrast-msmarco/resolve/main/lora192-pa4.zip"
-## For example, we will apply the model to TREC-Covid dataset. Here is the Domain Adaption Module that has been unsupervisedly trained its corpus.
+## For example, we will apply the model to TREC-Covid dataset. 
+# Here is the Domain Adaption Module for this dataset.
 DAM_NAME = "jingtao/DAM-bert_base-mlm-msmarco-trec_covid"
 
 ## Load the modules
@@ -156,7 +158,7 @@ We provide detailed instructions on how to prepare the training data and the out
 
 ### Reproducing Results with Trained Checkpoints
 
-We have provided commands for reproducing the various results in our [paper](https://arxiv.org/pdf/2208.05753.pdf).
+We provide commands for reproducing the various results in our [paper](https://arxiv.org/pdf/2208.05753.pdf).
 - [Reproducing results of Disentangled Dense Retrieval on English out-of-domain datasets](./examples/dense-mlm/english-marco/inference.md)
     - On multiple datasets: TREC-Covid, Lotte-Writing, Lotte-Recreation, Lotte-Technology, Lotte-Lifestyle, and Lotte-Science.
     - Evaluting both contrastively trained and distilled models.
@@ -221,7 +223,7 @@ With formatted supervised data, now you can train a REM module. We use a disenta
 
 ### Adapting to an Unseen Domain
 
-We suppose you already have a REM module (trained by yourself or provided by us). Now you need to adapt the model to an unseen domain. To do this, you need to train a Domain Adaption Module (DAM) that can mitigate the domain shift. 
+Suppose you already have a REM module (trained by yourself or provided by us), now you need to adapt the model to an unseen domain. To do this, you need to train a Domain Adaption Module (DAM) that can mitigate the domain shift. 
 
 Don't worry. The training is completely unsupervised and only requires the target-domain corpus. Each line of the corpus file should be formatted as `id doc' separated by tab. With it, you can train a DAM model. Please follow our example [here](./examples/dense-mlm/english-marco/adapt_domain.md).
 
