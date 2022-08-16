@@ -178,4 +178,18 @@ python -m torch.distributed.launch --nproc_per_node 4 \
 
 The results are
 ```python
+{'NDCG@1': 0.25449, 'NDCG@3': 0.21583, 'NDCG@5': 0.2049, 'NDCG@10': 0.20679, 'NDCG@100': 0.28285}
+{'MAP@1': 0.04597, 'MAP@3': 0.08256, 'MAP@5': 0.09892, 'MAP@10': 0.11601, 'MAP@100': 0.14065}
+{'Recall@10': 0.2024, 'Recall@50': 0.36043, 'Recall@100': 0.43759, 'Recall@200': 0.51673, 'Recall@500': 0.62043, 'Recall@1000': 0.69662}
+{'P@1': 0.25449, 'P@3': 0.19677, 'P@5': 0.16687, 'P@10': 0.12255, 'P@100': 0.02902}
+{'MRR@10': 0.3593, 'MRR@100': 0.36983}
 ```
+Performance scores on Lotte-Writing are
+```python
+{'NDCG@1': 0.5045, 'NDCG@3': 0.43784, 'NDCG@5': 0.42469, 'NDCG@10': 0.43442, 'NDCG@100': 0.50566}
+{'MAP@1': 0.12039, 'MAP@3': 0.22904, 'MAP@5': 0.27773, 'MAP@10': 0.31979, 'MAP@100': 0.3518}
+{'Recall@10': 0.44169, 'Recall@50': 0.60692, 'Recall@100': 0.65855, 'Recall@200': 0.69967, 'Recall@500': 0.75116, 'Recall@1000': 0.78384}
+{'P@1': 0.5045, 'P@3': 0.39183, 'P@5': 0.3232, 'P@10': 0.2184, 'P@100': 0.03533}
+{'MRR@10': 0.60539, 'MRR@100': 0.61146}
+```
+The results slightly differ from the reported results in our paper, largely due to different environments.
