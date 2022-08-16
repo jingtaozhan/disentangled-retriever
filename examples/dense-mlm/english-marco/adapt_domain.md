@@ -31,9 +31,9 @@ python -m torch.distributed.launch --nproc_per_node 4 \
 Now we assemble the trained DAM and the REM model. We use the contrastively finetuned REM as an example. 
 ```bash
 data_dir="./data/datasets/lotte/technology/test"
-backbone_name_or_path="./data/dense-mlm/english-marco/adapt_domain/lotte/technology/test"
+backbone_name_or_path="./data/dense-mlm/english-msmarco/adapt_domain/lotte/technology/test"
 adapter_name_or_path="https://huggingface.co/jingtao/REM-bert_base-dense-contrast-msmarco/resolve/main/lora192-pa4.zip"
-output_dir="./data/dense-mlm/english-marco/adapt_domain/lotte/technology/test/evaluate/contrast"
+output_dir="./data/dense-mlm/english-msmarco/adapt_domain/lotte/technology/test/evaluate/contrast"
 
 python -m torch.distributed.launch --nproc_per_node 4 \
     -m disentangled_retriever.dense.evaluate.run_eval \
@@ -56,6 +56,18 @@ python -m torch.distributed.launch --nproc_per_node 4 \
 
 The evaluation results are
 ```bash
-
+{'NDCG@1': 0.26697, 'NDCG@3': 0.22438, 'NDCG@5': 0.2099, 'NDCG@10': 0.20929, 'NDCG@100': 0.28923}
+{'MAP@1': 0.04649, 'MAP@3': 0.08394, 'MAP@5': 0.10064, 'MAP@10': 0.11739, 'MAP@100': 0.14307}
+{'Recall@10': 0.20156, 'Recall@50': 0.37467, 'Recall@100': 0.45131, 'Recall@200': 0.53181, 'Recall@500': 0.63878, 'Recall@1000': 0.71411}
+{'P@1': 0.26697, 'P@3': 0.20459, 'P@5': 0.16996, 'P@10': 0.12345, 'P@100': 0.02983}
+{'MRR@10': 0.36895, 'MRR@100': 0.37979}
 ```
-
+If the distilled REM is used, the evaluation results are
+```python
+{'NDCG@1': 0.25649, 'NDCG@3': 0.21855, 'NDCG@5': 0.20464, 'NDCG@10': 0.20648, 'NDCG@100': 0.28399}
+{'MAP@1': 0.04581, 'MAP@3': 0.08228, 'MAP@5': 0.09746, 'MAP@10': 0.11558, 'MAP@100': 0.14035}
+{'Recall@10': 0.20276, 'Recall@50': 0.3655, 'Recall@100': 0.44248, 'Recall@200': 0.52052, 'Recall@500': 0.63083, 'Recall@1000': 0.70175}
+{'P@1': 0.25649, 'P@3': 0.20043, 'P@5': 0.16587, 'P@10': 0.12181, 'P@100': 0.02921}
+{'MRR@10': 0.36055, 'MRR@100': 0.37163}
+```
+The results slightly differ from the reported results in our paper, largely due to different environments.

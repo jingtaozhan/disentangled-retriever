@@ -199,6 +199,11 @@ python -m torch.distributed.launch --nproc_per_node 4 \
 
 The output is:
 ```python
+{'NDCG@1': 0.15221, 'NDCG@3': 0.12736, 'NDCG@5': 0.12087, 'NDCG@10': 0.12089, 'NDCG@100': 0.15884}
+{'MAP@1': 0.03107, 'MAP@3': 0.05197, 'MAP@5': 0.06105, 'MAP@10': 0.07047, 'MAP@100': 0.08106}
+{'Recall@10': 0.11484, 'Recall@50': 0.19616, 'Recall@100': 0.23721, 'Recall@200': 0.28007, 'Recall@500': 0.34232, 'Recall@1000': 0.39754}
+{'P@1': 0.15221, 'P@3': 0.1137, 'P@5': 0.09509, 'P@10': 0.06911, 'P@100': 0.01563}
+{'MRR@10': 0.21364, 'MRR@100': 0.22212}
 ```
 
 ## Self-implemented Distilled Baseline
@@ -398,6 +403,11 @@ python -m torch.distributed.launch --nproc_per_node 4 \
 
 The output is:
 ```python
+{'NDCG@1': 0.17898, 'NDCG@3': 0.14893, 'NDCG@5': 0.14468, 'NDCG@10': 0.14355, 'NDCG@100': 0.18808}
+{'MAP@1': 0.03643, 'MAP@3': 0.06071, 'MAP@5': 0.07301, 'MAP@10': 0.08439, 'MAP@100': 0.09808}
+{'Recall@10': 0.13761, 'Recall@50': 0.23473, 'Recall@100': 0.28347, 'Recall@200': 0.34129, 'Recall@500': 0.41175, 'Recall@1000': 0.46811}
+{'P@1': 0.17898, 'P@3': 0.13237, 'P@5': 0.11512, 'P@10': 0.08265, 'P@100': 0.01861}
+{'MRR@10': 0.24748, 'MRR@100': 0.25591}
 ```
 
 ## TAS-Balanced Model
