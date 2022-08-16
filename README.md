@@ -56,7 +56,7 @@ However, it does not exist in DR where the abilities of relevance estimation and
 Here is the ranking performance of DR and DDR. Y-axis shows their relative improvement over BM25. X-axis shows different out-of-domain test sets. Both models are contrastively trained on supervised data. 
 NDCG@10   |  Recall@1000
 :-------------------------:|:-------------------------:
-<img src="./figures/NDCG@10.png" width="80%"> | <img src="./figures/R@1000.png" width="77%"> 
+<img src="./figures/NDCG@10.png" width="100%"> | <img src="./figures/R@1000.png" width="97%"> 
 
 Disentangled modeling brings amazing out-of-domain performance gains!
 More details are available in our [paper](https://arxiv.org/pdf/2208.05753.pdf).
