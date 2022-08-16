@@ -63,6 +63,11 @@ python -m torch.distributed.launch --nproc_per_node 4 \
 Following the above commands, we train and evaluate a baseline model.
 The evaluation results are
 ```python
+{'NDCG@1': 0.17465, 'NDCG@3': 0.14778, 'NDCG@5': 0.13916, 'NDCG@10': 0.13832, 'NDCG@100': 0.19323}
+{'MAP@1': 0.03004, 'MAP@3': 0.05305, 'MAP@5': 0.06324, 'MAP@10': 0.07282, 'MAP@100': 0.08777}
+{'Recall@10': 0.13417, 'Recall@50': 0.25031, 'Recall@100': 0.30958, 'Recall@200': 0.37117, 'Recall@500': 0.45639, 'Recall@1000': 0.52626}
+{'P@1': 0.17465, 'P@3': 0.13423, 'P@5': 0.11297, 'P@10': 0.08109, 'P@100': 0.02009}
+{'MRR@10': 0.25906, 'MRR@100': 0.26972}
 ```
 The results slightly differ from the reported results in our paper, largely due to different environments.
 
@@ -130,5 +135,10 @@ python -m torch.distributed.launch --nproc_per_node 4 \
 Following the above commands, we train and evaluate a baseline model.
 The evaluation results are
 ```python
+{'NDCG@1': 0.22006, 'NDCG@3': 0.18594, 'NDCG@5': 0.17411, 'NDCG@10': 0.17425, 'NDCG@100': 0.23766}
+{'MAP@1': 0.04028, 'MAP@3': 0.06987, 'MAP@5': 0.08294, 'MAP@10': 0.09638, 'MAP@100': 0.11561}
+{'Recall@10': 0.16897, 'Recall@50': 0.30296, 'Recall@100': 0.3691, 'Recall@200': 0.44096, 'Recall@500': 0.53007, 'Recall@1000': 0.59645}
+{'P@1': 0.22006, 'P@3': 0.16816, 'P@5': 0.14002, 'P@10': 0.1017, 'P@100': 0.02408}
+{'MRR@10': 0.31285, 'MRR@100': 0.32316}
 ```
 The results slightly differ from the reported results in our paper, largely due to different environments.

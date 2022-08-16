@@ -55,7 +55,11 @@ python -m torch.distributed.launch --nproc_per_node 4 \
 ```
 
 The evaluation results are
-```bash
-
+```python
+{'NDCG@1': 0.198, 'NDCG@3': 0.26377, 'NDCG@5': 0.28684, 'NDCG@10': 0.31152, 'NDCG@100': 0.36251}
+{'MAP@1': 0.198, 'MAP@3': 0.24717, 'MAP@5': 0.25997, 'MAP@10': 0.27022, 'MAP@100': 0.27952}
+{'Recall@10': 0.444, 'Recall@50': 0.629, 'Recall@100': 0.695, 'Recall@200': 0.77, 'Recall@500': 0.834, 'Recall@1000': 0.888}
+{'P@1': 0.198, 'P@3': 0.104, 'P@5': 0.0736, 'P@10': 0.0444, 'P@100': 0.00695}
+{'MRR@10': 0.27022, 'MRR@100': 0.27952}
 ```
 
