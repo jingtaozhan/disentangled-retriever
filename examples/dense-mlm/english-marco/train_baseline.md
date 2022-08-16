@@ -5,7 +5,7 @@
 Here is the training command. We find model performance convergences after five epochs, and here we set the maximum training epoch to $5$. The full batch size is $4 \times 32 = 128$. `neg_per_query' is set to $3$.  
 
 ```bash
-output_dir="./data/dense-mlm/english-msmarco/baseline_train/contrast"
+output_dir="./data/dense-mlm/english-marco/baseline_train/contrast"
 
 python -m torch.distributed.launch --nproc_per_node 4 \
     -m disentangled_retriever.dense.finetune.run_contrast \
@@ -40,7 +40,7 @@ python -m torch.distributed.launch --nproc_per_node 4 \
 Here is an example code to evaluate the out-of-domain performance on Lotte-Tech.
 ```bash
 data_dir="./data/datasets/lotte/technology/test"
-backbone_name_or_path="./data/dense-mlm/english-msmarco/baseline_train/contrast"
+backbone_name_or_path="./data/dense-mlm/english-marco/baseline_train/contrast"
 output_dir="$backbone_name_or_path/evaluate/lotte/technology/test"
 
 python -m torch.distributed.launch --nproc_per_node 4 \
@@ -77,7 +77,7 @@ The results slightly differ from the reported results in our paper, largely due 
 Here is the training command. We find model performance convergences after twenty epochs, and here we set the maximum training epoch to $20$. The full batch size is $4 \times 32 = 128$. `neg_per_query' is set to $3$. Loss function is Marge-MSE.
 
 ```bash
-output_dir="./data/dense-mlm/english-msmarco/baseline_train/distil"
+output_dir="./data/dense-mlm/english-marco/baseline_train/distil"
 
 python -m torch.distributed.launch --nproc_per_node 4 \
     -m disentangled_retriever.dense.finetune.run_distill \
@@ -112,7 +112,7 @@ python -m torch.distributed.launch --nproc_per_node 4 \
 Here is an example code to evaluate the out-of-domain performance on Lotte-Tech.
 ```bash
 data_dir="./data/datasets/lotte/technology/test"
-backbone_name_or_path="./data/dense-mlm/english-msmarco/baseline_train/distil"
+backbone_name_or_path="./data/dense-mlm/english-marco/baseline_train/distil"
 output_dir="$backbone_name_or_path/evaluate/lotte/technology/test"
 
 python -m torch.distributed.launch --nproc_per_node 4 \

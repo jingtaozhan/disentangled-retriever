@@ -3,7 +3,7 @@
 ## Unsupervisedly train DAM 
 
 ```bash
-output_dir="./data/dense-mlm/english-msmarco/train_rem/dam"
+output_dir="./data/dense-mlm/english-marco/train_rem/dam"
 
 python -m torch.distributed.launch --nproc_per_node 4 \
     -m disentangled_retriever.dense.adapt.run_adapt_with_mlm \
@@ -35,7 +35,7 @@ The trained model is actually our uploaded `jingtao/DAM-bert_base-mlm-msmarco'. 
 
 ```bash
 
-output_dir="./data/dense-mlm/english-msmarco/train_rem/rem-with-hf-dam/contrast"
+output_dir="./data/dense-mlm/english-marco/train_rem/rem-with-hf-dam/contrast"
 
 python -m torch.distributed.launch --nproc_per_node 4 \ 
     -m disentangled_retriever.dense.finetune.run_contrast \
@@ -72,8 +72,8 @@ Now evaluate the out-of-domain performance with Lotte-Technology.
 ```bash
 data_dir="./data/datasets/lotte/technology/test"
 backbone_name_or_path="jingtao/DAM-bert_base-mlm-msmarco-lotte_tech_test"
-adapter_name_or_path="./data/dense-mlm/english-msmarco/train_rem/rem-with-hf-dam/contrast/msmarco"
-output_dir="./data/dense-mlm/english-msmarco/train_rem/rem-with-hf-dam/contrast/evaluate/lotte/technology/test"
+adapter_name_or_path="./data/dense-mlm/english-marco/train_rem/rem-with-hf-dam/contrast/msmarco"
+output_dir="./data/dense-mlm/english-marco/train_rem/rem-with-hf-dam/contrast/evaluate/lotte/technology/test"
 
 python -m torch.distributed.launch --nproc_per_node 4 \
     -m disentangled_retriever.dense.evaluate.run_eval \
@@ -117,7 +117,7 @@ The results slightly differ from the reported results in our paper, largely due 
 
 
 ```bash
-output_dir="./data/dense-mlm/english-msmarco/train_rem/rem-with-hf-dam/distil"
+output_dir="./data/dense-mlm/english-marco/train_rem/rem-with-hf-dam/distil"
 
 python -m torch.distributed.launch --nproc_per_node 4 \
     -m disentangled_retriever.dense.finetune.run_distill \
@@ -154,8 +154,8 @@ Now evaluate the out-of-domain performance with Lotte-Technology.
 ```bash
 data_dir="./data/datasets/lotte/technology/test"
 backbone_name_or_path="jingtao/DAM-bert_base-mlm-msmarco-lotte_tech_test"
-adapter_name_or_path="./data/dense-mlm/english-msmarco/train_rem/rem-with-hf-dam/distil/msmarco"
-output_dir="./data/dense-mlm/english-msmarco/train_rem/rem-with-hf-dam/distil/evaluate/lotte/technology/test"
+adapter_name_or_path="./data/dense-mlm/english-marco/train_rem/rem-with-hf-dam/distil/msmarco"
+output_dir="./data/dense-mlm/english-marco/train_rem/rem-with-hf-dam/distil/evaluate/lotte/technology/test"
 
 python -m torch.distributed.launch --nproc_per_node 4 \
     -m disentangled_retriever.dense.evaluate.run_eval \

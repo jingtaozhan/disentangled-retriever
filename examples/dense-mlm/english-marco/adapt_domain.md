@@ -2,7 +2,7 @@
 
 We use Lotte-Technology as an example. To adapt to an unseen domain, we unsupervisedly train a separate DAM model based on the corpus.
 ```bash
-output_dir="./data/dense-mlm/english-msmarco/adapt_domain/lotte/technology/test"
+output_dir="./data/dense-mlm/english-marco/adapt_domain/lotte/technology/test"
 
 python -m torch.distributed.launch --nproc_per_node 4 \
     -m disentangled_retriever.dense.adapt.run_adapt_with_mlm \
@@ -31,9 +31,9 @@ python -m torch.distributed.launch --nproc_per_node 4 \
 Now we assemble the trained DAM and the REM model. We use the contrastively finetuned REM as an example. 
 ```bash
 data_dir="./data/datasets/lotte/technology/test"
-backbone_name_or_path="./data/dense-mlm/english-msmarco/adapt_domain/lotte/technology/test"
+backbone_name_or_path="./data/dense-mlm/english-marco/adapt_domain/lotte/technology/test"
 adapter_name_or_path="https://huggingface.co/jingtao/REM-bert_base-dense-contrast-msmarco/resolve/main/lora192-pa4.zip"
-output_dir="./data/dense-mlm/english-msmarco/adapt_domain/lotte/technology/test/evaluate/contrast"
+output_dir="./data/dense-mlm/english-marco/adapt_domain/lotte/technology/test/evaluate/contrast"
 
 python -m torch.distributed.launch --nproc_per_node 4 \
     -m disentangled_retriever.dense.evaluate.run_eval \
