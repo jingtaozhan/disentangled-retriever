@@ -25,6 +25,8 @@ This is the official repo for our paper [Disentangled Modeling of Domain and Rel
 
 - [Quick Tour](#quick-tour)
 - [Installation](#installation)
+- [Trained Models](#trained-models)
+- [Example Usage](#example-usage)
 - [Reproducing Results](#reproducing-results)
     - [Preparing Datasets](#preparing-datasets)
     - [Reproducing Results with Trained Checkpoints](#reproducing-results-with-trained-checkpoints)
@@ -79,6 +81,68 @@ pip install .
 For development, use
 ```
 pip install --editable .
+```
+
+### Trained Models
+
+We provide the following trained models to facilitate reproducibility and reusage.
+- Relevance Estimation Module (REM)
+    - (English) Contrastively trained on MS MARCO Passage Ranking: https://huggingface.co/jingtao/REM-bert_base-dense-contrast-msmarco/resolve/main/lora192-pa4.zip
+    - (English) Knowledge distilled on MS MARCO Passage Ranking: https://huggingface.co/jingtao/REM-bert_base-dense-distil-msmarco/resolve/main/lora192-pa4.zip
+    - (Chinese) Contrastively trained on Dureader: https://huggingface.co/jingtao/REM-bert_base-dense-contrast-dureader/resolve/main/lora192-pa4.zip
+    - (Chinese) Knowledge distilled on Dureader: https://huggingface.co/jingtao/REM-bert_base-dense-distil-dureader/resolve/main/lora192-pa4.zip
+- Domain Adaption Module (DAM)
+    - English test sets 
+        - MS MARCO Passage: [jingtao/DAM-bert_base-mlm-msmarco](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco)
+        - TREC-Covid: [jingtao/DAM-bert_base-mlm-msmarco-trec_covid](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco-trec_covid)
+        - Lotte-Writing: [jjingtao/DAM-bert_base-mlm-msmarco-lotte_write_test](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco-lotte_write_test)
+        - Lotte-Recreation: [jingtao/DAM-bert_base-mlm-msmarco-lotte_rec_test](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco-lotte_rec_test)
+        - Lotte-Technology: [jingtao/DAM-bert_base-mlm-msmarco-lotte_tech_test](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco-lotte_tech_test)
+        - Lotte-Lifestyle: [jingtao/DAM-bert_base-mlm-msmarco-lotte_life_test](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco-lotte_life_test)
+        - Lotte-Science: [jingtao/DAM-bert_base-mlm-msmarco-lotte_sci_test](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco-lotte_sci_test)
+    - Chinese test sets
+        - Dureader: [jingtao/DAM-bert_base-mlm-dureader](https://huggingface.co/jingtao/DAM-bert_base-mlm-dureader)
+        - CPR-Ecommerce: [jingtao/DAM-bert_base-mlm-dureader-cpr_ecom](https://huggingface.co/jingtao/DAM-bert_base-mlm-dureader-cpr_ecom)
+        - CPR-Video: [jingtao/DAM-bert_base-mlm-dureader-cpr_video](https://huggingface.co/jingtao/DAM-bert_base-mlm-dureader-cpr_video)
+        - CPR-Medical: [jingtao/DAM-bert_base-mlm-dureader-cpr_medical](https://huggingface.co/jingtao/DAM-bert_base-mlm-dureader-cpr_medical)
+        - cMedQAv2: [jingtao/DAM-bert_base-mlm-dureader-cmedqav2](https://huggingface.co/jingtao/DAM-bert_base-mlm-dureader-cmedqav2)
+- Dense Retrieval Models
+    - (English) Contrastively trained on MS MARCO Passage Ranking: [jingtao/Dense-bert_base-contrast-msmarco](https://huggingface.co/jingtao/Dense-bert_base-contrast-msmarco)
+    - (English) Knowledge distilled on MS MARCO Passage Ranking: [jingtao/Dense-bert_base-distil-msmarco](https://huggingface.co/jingtao/Dense-bert_base-distil-msmarco)
+    - (Chinese) Contrastively trained on Dureader: [jingtao/Dense-bert_base-contrast-dureader](https://huggingface.co/jingtao/Dense-bert_base-contrast-dureader)
+    - (Chinese) Knowledge distilled on Dureader: [jingtao/Dense-bert_base-distil-dureader](https://huggingface.co/jingtao/Dense-bert_base-distil-dureader)
+
+## Example usage:
+```python
+from transformers import AutoConfig, AutoTokenizer
+from disentangled_retriever.dense.modeling import AutoDenseModel
+
+# This is the Relevance Estimation Module (REM) contrastively trained on MS MARCO
+REM_URL = "https://huggingface.co/jingtao/REM-bert_base-dense-contrast-msmarco/resolve/main/lora192-pa4.zip"
+## For example, we will apply the model to TREC-Covid dataset. Here is the Domain Adaption Module that has been unsupervisedly trained its corpus.
+DAM_NAME = "jingtao/DAM-bert_base-mlm-msmarco-trec_covid"
+
+## Load the modules
+config = AutoConfig.from_pretrained(DAM_NAME)
+config.similarity_metric, config.pooling = "ip", "average"
+tokenizer = AutoTokenizer.from_pretrained(DAM_NAME, config=config)
+model = AutoDenseModel.from_pretrained(DAM_NAME, config=config)
+adapter_name = model.load_adapter(REM_URL)
+model.set_active_adapters(adapter_name)
+model.merge_lora(adapter_name)
+
+## Let's try to compute the similarities
+queries  = ["When will the COVID-19 pandemic end?", "What are the impacts of COVID-19 pandemic to society?"]
+passages = ["It will end soon.", "It makes us care for each other."]
+query_embeds = model(**tokenizer(queries, return_tensors="pt", padding=True, truncation=True, max_length=512))
+passage_embeds = model(**tokenizer(passages, return_tensors="pt", padding=True, truncation=True, max_length=512))
+
+print(query_embeds @ passage_embeds.T)
+```
+Results are:
+```python
+tensor([[107.6821, 101.4270],
+        [103.7373, 105.0448]], grad_fn=<MmBackward0>)
 ```
 
 ## Reproducing Results
