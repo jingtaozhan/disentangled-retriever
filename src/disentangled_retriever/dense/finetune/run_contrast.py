@@ -15,7 +15,7 @@ from transformers.trainer_utils import is_main_process
 from ..modeling import (
     AutoDenseModel, 
     SIMILARITY_METRICS,
-    POOLING_METHODS, POOLING_CLS
+    POOLING_METHODS
 )
 from .contrast_utils import (
     BackboneContrastDenseFinetuner,
@@ -33,27 +33,21 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class DataTrainingArguments:
-    """
-    Arguments pertaining to what data we are going to input our model for training and eval.
-    """
     qrel_path: str = field()
     query_path: str = field()
     corpus_path: str = field()  
     max_query_len: int = field()
     max_doc_len: int = field()  
-    valid_corpus_path : str = field()
-    valid_query_path : str = field()
-    valid_qrel_path : str = field()
+    valid_corpus_path : str = field(default=None)
+    valid_query_path : str = field(default=None)
+    valid_qrel_path : str = field(default=None)
     
 
 @dataclass
 class ModelArguments:
-    """
-    Arguments pertaining to which model/config/tokenizer we are going to fine-tune, or train from scratch.
-    """
-    similarity_metric: str = field(metadata={"choices": SIMILARITY_METRICS})
     model_name_or_path: str = field()
-    pooling: str = field(default=POOLING_CLS, metadata={"choices": POOLING_METHODS})
+    pooling: str = field(metadata={"choices": POOLING_METHODS})
+    similarity_metric: str = field(metadata={"choices": SIMILARITY_METRICS})
     new_adapter_name: str = field(default=None)
 
 
@@ -136,7 +130,6 @@ def main():
     if model_args.new_adapter_name is None:
         logger.info("Add no adapter and only train the backbone")
         trainer_class = BackboneContrastDenseFinetuner
-        keys_to_ignore_on_save = None
     else:
         trainer_class = AdapterContrastDenseFinetuner
         model_param_cnt = sum(p.numel() for p in model.parameters() if p.requires_grad)
@@ -146,7 +139,6 @@ def main():
         logger.info(f"Parameters with gradient: {[n for n, p in model.named_parameters() if p.requires_grad]}")
         adapter_param_cnt = sum(p.numel() for p in model.parameters() if p.requires_grad)
         logger.info(f"adapter_param_cnt:{adapter_param_cnt}, model_param_cnt:{model_param_cnt}, ratio:{adapter_param_cnt/model_param_cnt:.4f}")
-        keys_to_ignore_on_save = None
 
     logger.info(f"Trainer Class: {trainer_class}")
     all_model_param_cnt = sum(p.numel() for p in model.parameters())
@@ -169,16 +161,19 @@ def main():
         max_query_len = data_args.max_query_len, 
         max_doc_len = data_args.max_doc_len,
     )
-    eval_dataset=load_validation_set(
-        data_args.valid_corpus_path,
-        data_args.valid_query_path,
-        data_args.valid_qrel_path,
-    )
+    if data_args.valid_corpus_path is None:
+        eval_dataset = None
+        assert data_args.valid_query_path is None and data_args.valid_qrel_path is None
+    else:
+        eval_dataset=load_validation_set(
+            data_args.valid_corpus_path,
+            data_args.valid_query_path,
+            data_args.valid_qrel_path,
+        )
     
     # Initialize our Trainer
     trainer = trainer_class(
         qrels=train_set.get_qrels(),
-        keys_to_ignore_on_save=keys_to_ignore_on_save,
         model=model,
         args=training_args,
         train_dataset=train_set,
@@ -186,10 +181,9 @@ def main():
         data_collator=data_collator,
         eval_dataset=eval_dataset
     )
-    # additionally save checkpoint at the end of one epoch
+
     trainer.train(resume_from_checkpoint=resume_from_checkpoint)
-    if is_main_process(training_args.local_rank):
-        trainer.save_model()
+    trainer.save_model()
 
 
 def _mp_fn(index):

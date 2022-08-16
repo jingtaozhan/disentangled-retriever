@@ -127,7 +127,7 @@ class QDRelDataset(Dataset):
     def __getitem__(self, index):
         '''
         We do not tokenize text here and instead tokenize batch of text in the collator because
-            a. Tokenizing batch of text is much faster then tokenizing one by one
+            a. Tokenizing batch of text is much faster than tokenizing one by one
             b. Usually, the corpus is too large and we cannot afford to use multiple num workers
         '''
         qid = self.qids[index]
@@ -181,7 +181,6 @@ class BaseDistillDenseFinetuner:
         """
             query_embeds: Nq, dim
             doc_embeds: Nq, (1+n), dim
-            Ignore top-n negatives because they have been used in distillation loss
         """
         if self.args.local_rank > -1:
             query_embeds = self._gather_tensor(query_embeds)

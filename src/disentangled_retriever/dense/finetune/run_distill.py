@@ -21,7 +21,7 @@ from .distill_utils import (
 from ..modeling import (
     AutoDenseModel, 
     SIMILARITY_METRICS,
-    POOLING_METHODS, POOLING_CLS
+    POOLING_METHODS
 )
 from .adapter_arg import (
     AdapterArguments,
@@ -34,34 +34,28 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class DataTrainingArguments:
-    """
-    Arguments pertaining to what data we are going to input our model for training and eval.
-    """
     qrel_path: str = field()
     query_path: str = field()
     corpus_path: str = field()  
     max_query_len: int = field()
     max_doc_len: int = field()  
-    valid_corpus_path : str = field()
-    valid_query_path : str = field()
-    valid_qrel_path : str = field()
     ce_scores_file: str = field()
+    valid_corpus_path : str = field(default=None)
+    valid_query_path : str = field(default=None)
+    valid_qrel_path : str = field(default=None)
 
 
 @dataclass
 class ModelArguments:
-    """
-    Arguments pertaining to which model/config/tokenizer we are going to fine-tune, or train from scratch.
-    """
-    similarity_metric: str = field(metadata={"choices": SIMILARITY_METRICS})
     model_name_or_path: str = field()
-    pooling: str = field(default=POOLING_CLS, metadata={"choices": POOLING_METHODS})
+    pooling: str = field(metadata={"choices": POOLING_METHODS})
+    similarity_metric: str = field(metadata={"choices": SIMILARITY_METRICS})
     new_adapter_name: str = field(default=None)
 
 
 @dataclass
 class DenseFinetuneArguments(TrainingArguments):
-    inv_temperature: float = field(default=100)
+    inv_temperature: float = field(default=1)
     seed: int = field(default=2022)
     neg_per_query: int = field(default=3)
 
@@ -167,11 +161,15 @@ def main():
         max_query_len = data_args.max_query_len, 
         max_doc_len = data_args.max_doc_len,
     )
-    eval_dataset=load_validation_set(
-        data_args.valid_corpus_path,
-        data_args.valid_query_path,
-        data_args.valid_qrel_path,
-    )
+    if data_args.valid_corpus_path is None:
+        eval_dataset = None
+        assert data_args.valid_query_path is None and data_args.valid_qrel_path is None
+    else:
+        eval_dataset=load_validation_set(
+            data_args.valid_corpus_path,
+            data_args.valid_query_path,
+            data_args.valid_qrel_path,
+        )
 
     trainer = trainer_class(
         model=model,
@@ -181,10 +179,8 @@ def main():
         data_collator=data_collator,
         eval_dataset=eval_dataset
     )
-    # additionally save checkpoint at the end of one epoch
     trainer.train(resume_from_checkpoint=resume_from_checkpoint)
-    if is_main_process(training_args.local_rank):
-        trainer.save_model()
+    trainer.save_model()
 
 
 def _mp_fn(index):
