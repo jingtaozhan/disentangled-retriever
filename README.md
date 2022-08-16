@@ -53,8 +53,13 @@ Dense Retrieval   |  Disentangled Dense Retrieval
 The idea of DDR can date back to classic retrieval models in the pre-dense-retrieval era. BM25 utilizes the same formula for estimating relevance scores across domains but measures word importance with corpus-specific IDF values. 
 However, it does not exist in DR where the abilities of relevance estimation and domain modeling are jointly learned during training and entangled within the model parameters. 
 
+Here is the ranking performance of DR and DDR. Y-axis shows their relative improvement over BM25. X-axis shows different out-of-domain test sets. Both models are contrastively trained on supervised data. 
+NDCG@10   |  Recall@1000
+:-------------------------:|:-------------------------:
+<img src="./figures/NDCG@10.png" width="100%"> | <img src="./figures/R@1000.png" width="97%"> 
 
-Please check our [paper](https://arxiv.org/pdf/2208.05753.pdf) to see the amazing out-of-domain performance gains brought by the disentangled modeling!
+Disentangled modeling brings amazing out-of-domain performance gains!
+More details are available in our [paper](https://arxiv.org/pdf/2208.05753.pdf).
 
 ## Installation
 
