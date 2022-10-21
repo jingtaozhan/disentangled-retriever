@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='disentangled_retriever',
-    version='0.0.1',
+    version='0.0.2',
     packages=find_packages("src"),
     package_dir={'': 'src'},
     description='Disentangled Modeling of Domain and Relevance for Adaptable Dense Retrieval',
@@ -17,8 +17,9 @@ setup(
     author_email='jingtaozhan@gmail.com',
     install_requires=[
         "pytrec-eval",
+        "ujson",
+        "adapter-transformers",
         # 'torch >= 1.10.1', # install manually
-        # 'adapter-transformers', # not officially released yet
         # 'faiss-gpu == 1.7.2', # install manually
     ],
 )
