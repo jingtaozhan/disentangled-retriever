@@ -5,7 +5,7 @@ We use Lotte-Technology as an example. To adapt to an unseen domain, we unsuperv
 output_dir="./data/dense-mlm/english-marco/adapt_domain/lotte/technology/test"
 
 python -m torch.distributed.launch --nproc_per_node 4 \
-    -m disentangled_retriever.dense.adapt.run_adapt_with_mlm \
+    -m disentangled_retriever.adapt.run_adapt_with_mlm \
     --corpus_path ./data/datasets/lotte/technology/test/corpus.tsv \
     --output_dir $output_dir \
     --model_name_or_path jingtao/DAM-bert_base-mlm-msmarco \
