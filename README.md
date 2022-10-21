@@ -34,17 +34,13 @@ This is the official repo for our paper [Disentangled Modeling of Domain and Rel
 
 - [Quick Tour](#quick-tour)
 - [Installation](#installation)
-- [Trained Models](#trained-models)
+- [Released Models](#released-models)
 - [Example Usage](#example-usage)
-- [Reproducing Results](#reproducing-results)
-    - [Preparing Datasets](#preparing-datasets)
-    - [Reproducing Results with Trained Checkpoints](#reproducing-results-with-trained-checkpoints)
-    - [Generic Relevance Estimation: Training REM](#generic-relevance-estimation-training-rem)
-    - [Unsupervised Domain Adaption: Training DAM](#unsupervised-domain-adaption-training-dam)
-    - [Training Dense Retrieval Baselines](#training-dense-retrieval-baselines)
-- [Application in Custom Datasets](#application-in-custom-datasets)  
-    - [Learning Relevance with Supervision](#learning-relevance-with-supervision)
-    - [Adapting to an Unseen Domain](#adapting-to-an-unseen-domain)
+- [Preparing Datasets](#preparing-datasets)
+- [Unsupervisedly Adapting to an Unseen Domain](#unsupervisedly-adapting-to-an-unseen-domain)
+- [Learning Generic Relevance Estimation Ability](#learning-generic-relevance-estimation-ability)
+- [Reproducing Results with Released Checkpoints](#reproducing-results-with-released-checkpoints)
+- [Training Vanilla Neural Ranking Models](#training-vanilla-neural-ranking-models)
     
 
 ## Quick Tour
@@ -96,9 +92,9 @@ For development, use
 pip install --editable .
 ```
 
-### Trained Models
+## Released Models
 
-We provide trained models to facilitate reproducibility and reusage. You do not have to manually download these. **They will be automatically downloaded at runtime.**
+We release about 50 models to facilitate reproducibility and reusage. You do not have to manually download these. **They will be automatically downloaded at runtime.**
 
 <details>
   <summary> Relevance Estimation Modules for Dense Retrieval (<i>click to expand</i>)</summary>
@@ -227,6 +223,8 @@ Besides Disentangled Neural Ranking models, we also release the vanilla/traditio
 *Note: Our code also supports training and evaluating vanilla neural ranking models!*
 
 ## Example usage:
+
+Here is an example about using disentangled dense retrieval for ranking. The REM is generic, while the DAM is domain-specifically trained to mitigate the domain shift. The two modules are assembled during inference.
 ```python
 from transformers import AutoConfig, AutoTokenizer
 from disentangled_retriever.dense.modeling import AutoDenseModel
@@ -261,31 +259,74 @@ tensor([[107.6821, 101.4270],
         [103.7373, 105.0448]], grad_fn=<MmBackward0>)
 ```
 
-## Reproducing Results
+## Preparing datasets
 
-### Preparing datasets
-
-We provide detailed instructions on how to prepare the training data and the out-of-domain test sets:
+We will use various datasets to show how disentangled modeling facilitates flexible domain adaption. Before the demonstration, please download and preprocess the corresponding datasets. Here we provide detailed instructions:
 
 - [Preparing English training data and out-of-domain test sets](./examples/dense-mlm/english-marco/prepare_dataset/README.md)
 - [Preparing Chinese training data and out-of-domain test sets](./examples/dense-mlm/chinese-dureader/prepare_dataset/README.md)
 
-### Reproducing Results with Trained Checkpoints
+
+## Unsupervisedly Adapting to an Unseen Domain
+
+Suppose you already have a REM module (trained by yourself or provided by us) and you need to adapt the model to an unseen domain. To do this, just train a Domain Adaption Module (DAM) to mitigate the domain shift. 
+
+The training process is completely unsupervised and only requires the target-domain corpus. Each line of the corpus file should be formatted as `id doc' separated by tab. Then you can train a DAM model with only one command. 
+```bash
+python -m torch.distributed.launch --nproc_per_node 4 \
+    -m disentangled_retriever.adapt.run_adapt_with_mlm \
+    --corpus_path ... ... ...
+```
+The trained DAM can be combined with different REMs and formalize a well-performing neural ranking models. We provide many REMs (see this [section](#released-models)) that correspond to different ranking methods or are trained with different losses. The trained DAM can be combined with any REM to become an effective ranking model, e.g., a Dense Retrievla model or a ColBERT model. 
+For example, if you want to acquire a dense retrieval model, use the following command for inference:
+```bash
+python -m torch.distributed.launch --nproc_per_node 4 \
+    -m disentangled_retriever.dense.evaluate.run_eval \
+    --backbone_name_or_path [path-to-the-trained-DAM] \
+    --adapter_name_or_path [path-to-the-dense-retrieval-rem] \
+    --corpus_path ... --query_path ... ... ...
+```
+If you want to acquire a ColBERT model, use the following command for inference:
+```bash
+python -m torch.distributed.launch --nproc_per_node 4 \
+    -m disentangled_retriever.colbert.evaluate.run_eval \
+    --backbone_name_or_path [path-to-the-trained-DAM] \
+    --adapter_name_or_path [path-to-the-dense-retrieval-rem] \
+    --corpus_path ... --query_path ... ... ...
+```
+
+We give an adaption example [here](./examples/dense-mlm/english-marco/adapt_domain.md) with detailed instructions. Please trying this example before using our methods on your own datasets.
+
+## Learning Generic Relevance Estimation Ability
+
+We already release a bunch of Relevance Estimation Modules (REMs) for various kinds of ranking methods. You can directly adopt these public checkpoints. 
+But if you have some private labeled data and want to a Relevance Estimation Module (REM) on it, here we provide instructions on how to do this.
+
+To directly use this codebase for training, you need to convert your dataformat as follows
+- corpus.tsv: corpus file. each line is `docid doc' separated by tab.
+- query.train: training queries. each line is `qid query' separated by tab.
+- qrels.train: annotations. each line is `qid 0 docid rel_level' separated by tab. 
+- [Optional] hard negative file for contrastive training: each line is `qid   neg_docid1 neg_docid2 ...'. qid and neg_docids are separated by tab. neg_docids are separated by space.
+- [Optional] soft labels for knowledge distillation: a pickle file containing a dict: {qid: {docid: score}}. It should contain the soft labels of positive pairs and of several negative pairs.
+
+If you still have questions about the data formatting, you can check [how we convert MS MARCO](./examples/dense-mlm/english-marco/prepare_dataset/README.md#ms-marco-passage-ranking).
+
+With formatted supervised data, now you can train a REM module. We use a disentangled finetuning trick: first training a DAM module to capture domain-specific features and then training the REM module to learn domain-invariant matching patterns. 
+We provide two training examples, [one](./examples/dense-mlm/english-marco/train_rem.md) on English MS MARCO and [one](./examples/dense-mlm/chinese-dureader/train_rem.md) on Chinese Dureader. 
+
+## Reproducing Results with Released Checkpoints
 
 We provide commands for reproducing the various results in our [paper](https://arxiv.org/pdf/2208.05753.pdf).
-- [Reproducing results of Disentangled Dense Retrieval on English out-of-domain datasets](./examples/dense-mlm/english-marco/inference.md)
-    - On multiple datasets: TREC-Covid, Lotte-Writing, Lotte-Recreation, Lotte-Technology, Lotte-Lifestyle, and Lotte-Science.
-    - Evaluting both contrastively trained and distilled models.
-- [Reproducing results of Disentangled Dense Retrieval on Chinese out-of-domain datasets](./examples/dense-mlm/chinese-dureader/inference.md)
-    - On multiple datasets: CPR-Ecom, CPR-Video, CPR-Medical, cMedQAv2.
-    - Evaluting both contrastively trained and distilled models.
-- [Reproducing results of Dense Retrieval baselines on English out-of-domain datasets](./examples/dense-mlm/english-marco/inference_baseline.md)
-    - Evaluating self-implemented Dense Retrieval baselines that follow the same finetuning settings as Disentangled Dense Retrieval. 
-    - Evaluating (a) strong Dense Retrieval model(s) in the literature.
-- [Reproducing results of Dense Retrieval baselines on Chinese out-of-domain datasets](./examples/dense-mlm/chinese-dureader/inference_baseline.md)
-    - Evaluating self-implemented Dense Retrieval baselines that follow the same finetuning settings as Disentangled Dense Retrieval. 
+- Evaluating Disentangled Dense Retrieval
+  - [Evaluating Disentangled Dense Retrieval on English out-of-domain datasets](./examples/dense-mlm/english-marco/inference.md)
+  - [Evaluating Disentangled Dense Retrieval on Chinese out-of-domain datasets](./examples/dense-mlm/chinese-dureader/inference.md)
+- Evaluating Disentangled uniCOIL
+- Evaluating Disentangled SPLADE
+- Evaluating Disentangled ColBERT
+- Evaluating Disentangled BERT re-ranker
 
-### Generic Relevance Estimation: Training REM 
+
+<!-- ### Generic Relevance Estimation: Training REM 
 
 Relevance Estimation Module (REM) is only required to trained once. In our paper, we use MS MARCO as English training data and use Dureader as Chinese training data. We also explore two finetuning methods. The commands are provided. You can also use your own supervised data to train a REM module. 
 
@@ -305,41 +346,21 @@ With a ready REM module, Domain Adaption Module (DAM) is trained unsupervisedly 
     - Take Lotte-Technology as an example.
 - [Adapting to an unseen Chinese domain](./examples/dense-mlm/chinese-dureader/adapt_domain.md)
     - Unsupervised Adaption yet high effectiveness.
-    - Take CPR-Ecommerce as an example.
+    - Take CPR-Ecommerce as an example. -->
 
-### Training Dense Retrieval baselines
+## Training Vanilla Neural Ranking Models
 
-Here we provide commands for training Dense Retrieval baselines. In our codebase, we support training a Dense Retrieval model with exactly the same finetuning implememtation. Therefore, we can fairly compare the two paradigms. 
+This powerful codebase not only supports Disentangled Neural Ranking, but also vanilla Neural Ranking models. You can easily reproduce state-of-the-art Dense Retrieval, uniCOIL, SPLADE, ColBERT, and BERT rerankers using this codebase! The instructions are provided as below.
 
-- [Training Dense Retrieval baselines on MS MARCO](./examples/dense-mlm/english-marco/train_baseline.md)
-    - Hard negatives, contrastive loss.
-    - Cross-encoder scores, Margin-MSE loss.
-- [Training Dense Retrieval baselines on Dureader](./examples/dense-mlm/chinese-dureader/train_baseline.md)
-    - In batch negatives, contrastive loss.
-
-
-## Application in Custom Datasets
-
-Here we introduce how to apply Disentangled Dense Retrieval in your custom datasets.
-
-### Learning Relevance with Supervision
-
-If you have your own labeled data, you may consider training a Relevance Estimation Module (REM) on it (You can also use our provided checkpoints for English/Chinese experiments as well). To directly use this codebase for training, you need to convert your dataformat as follows
-- corpus.tsv: corpus file. each line is `docid doc' separated by tab.
-- query.train: training queries. each line is `qid query' separated by tab.
-- qrels.train: annotations. each line is `qid 0 docid rel_level' separated by tab. 
-- [Optional] hard negative file for contrastive training: each line is `qid   neg_docid1 neg_docid2 ...'. qid and neg_docids are separated by tab. neg_docids are separated by space.
-- [Optional] soft labels for knowledge distillation: a pickle file containing a dict: {qid: {docid: score}}. It should contain the soft labels of positive pairs and of several negative pairs.
-
-If you still have questions about the data formatting, you can check [how we convert MS MARCO](./examples/dense-mlm/english-marco/prepare_dataset/README.md#ms-marco-passage-ranking).
-
-With formatted supervised data, now you can train a REM module. We use a disentangled finetuning trick: first training a DAM module to capture domain-specific features and then training the REM module to learn domain-invariant matching patterns. You can find a training example [here](./examples/dense-mlm/english-marco/train_rem.md). After training, you will acquire a REM module that can will be directly used in any domain. 
-
-### Adapting to an Unseen Domain
-
-Suppose you already have a REM module (trained by yourself or provided by us), now you need to adapt the model to an unseen domain. To do this, you need to train a Domain Adaption Module (DAM) that can mitigate the domain shift. 
-
-Don't worry. The training is completely unsupervised and only requires the target-domain corpus. Each line of the corpus file should be formatted as `id doc' separated by tab. With it, you can train a DAM model. Please follow our example [here](./examples/dense-mlm/english-marco/adapt_domain.md).
+- Dense Retrieval
+  - [Training Dense Retrieval models on MS MARCO](./examples/dense-mlm/english-marco/train_baseline.md)
+  - [Training Dense Retrieval models on Dureader](./examples/dense-mlm/chinese-dureader/train_baseline.md)
+  - [Evaluating Dense Retrieval models on English out-of-domain datasets](./examples/dense-mlm/english-marco/inference_baseline.md)
+  - [Evaluating Dense Retrieval models on Chinese out-of-domain datasets](./examples/dense-mlm/chinese-dureader/inference_baseline.md)
+- uniCOIL
+- SPLADE
+- ColBERT
+- BERT Re-rankers
 
 
 ## Citation
