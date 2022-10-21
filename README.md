@@ -1,4 +1,4 @@
-# Disentangled Dense Retrieval
+# Disentangled Neural Ranking
 
 <p align="left">
     <a href="https://github.com/jingtaozhan/disentangled-retriever">
@@ -19,7 +19,16 @@
     </a>
 </p>
 
-This is the official repo for our paper [Disentangled Modeling of Domain and Relevance for Adaptable Dense Retrieval](https://arxiv.org/pdf/2208.05753.pdf). Disentangled Dense Retrieval (DDR) supports effective and flexible domain adaptation.
+This is the official repo for our paper [Disentangled Modeling of Domain and Relevance for Adaptable Dense Retrieval](https://arxiv.org/pdf/2208.05753.pdf). Disentangled Neural Ranking is a novel paradigm that supports effective and flexible domain adaptation for neural ranking models including Dense Retrieval, uniCOIL, SPLADE, ColBERT, and BERT re-ranker.
+
+## Features
+
+- Various ranking architectures, including Dense Retrieval, uniCOIL, SPLADE, ColBERT, and BERT re-ranker. 
+- Two source-domain finetuning methods, contrastive finetuning and distillation. 
+- *One command line for unsupervised and effective domain adaption.*
+- *One command line for effective few-shot domain adaption.*
+- Huggingface-style training and inference, supporting multi-gpus, mixed precision, etc.
+
 
 ## Quick Links
 
@@ -40,23 +49,29 @@ This is the official repo for our paper [Disentangled Modeling of Domain and Rel
 
 ## Quick Tour
 
-Common Dense Retrieval (DR) is vulnerable to domain shift: the trained DR models perform worse than traditional retrieval methods like BM25 in out-of-domain scenarios.
+Neural Ranking models are vulnerable to domain shift: the trained models may even perform worse than traditional retrieval methods like BM25 in out-of-domain scenarios.
 
-In this work, we propose **Disentangled Dense Retrieval (DDR)** to support effective and flexible domain adaptation. 
-DDR consists of a Relevance Estimation Module (REM) for modeling domain-invariant matching patterns and several Domain Adaption Modules (DAMs) for modeling domain-specific features of multiple target corpora. 
-DDR enables a flexible training paradigm in which REM is trained with supervision once and DAMs are trained with unsupervised data. 
+In this work, we propose **Disentangled Neural Ranking (DNR)** to support effective and flexible domain adaptation. 
+DNR consists of a Relevance Estimation Module (REM) for modeling domain-invariant matching patterns and several Domain Adaption Modules (DAMs) for modeling domain-specific features of multiple target corpora. 
+DNR enables a flexible training paradigm in which REM is trained with supervision once and DAMs are trained with unsupervised data. 
 
-Dense Retrieval   |  Disentangled Dense Retrieval
+Neural Ranking   |  Disentangled Neural Ranking
 :-------------------------:|:-------------------------:
 <img src="./figures/dr-modeling.png" height="80%">  | <img src="./figures/ddr-modeling.png" height="80%"> 
 
-The idea of DDR can date back to classic retrieval models in the pre-dense-retrieval era. BM25 utilizes the same formula for estimating relevance scores across domains but measures word importance with corpus-specific IDF values. 
-However, it does not exist in DR where the abilities of relevance estimation and domain modeling are jointly learned during training and entangled within the model parameters. 
+The idea of DNR can date back to classic retrieval models in the pre-neural-ranking era. BM25 utilizes the same formula for estimating relevance scores across domains but measures word importance with corpus-specific IDF values. 
+However, it does not exist in vanilla neural ranking models where the abilities of relevance estimation and domain modeling are jointly learned during training and entangled within the model parameters. 
 
-Here is the ranking performance of DR and DDR. Y-axis shows their relative improvement over BM25. X-axis shows different out-of-domain test sets. Both models are contrastively trained on supervised data. 
+Here are two examples when we apply disentangled modeling for domain adaption. We plot the figure where y-axis shows the relative improvement over BM25 and x-axis shows different out-of-domain test sets.
+The ranking performance of Dense Retrieval (DR) and Disentangled Dense Retrieval (DDR) is shown below.  
 NDCG@10   |  Recall@1000
 :-------------------------:|:-------------------------:
 <img src="./figures/NDCG@10.png" width="100%"> | <img src="./figures/R@1000.png" width="97%"> 
+
+The ranking performance of ColBERT and Disentangled ColBERT (D-ColBERT) is shown below. 
+NDCG@10   |  Recall@1000
+:-------------------------:|:-------------------------:
+<img src="./figures/colbert-ndcg@10.png" width="100%"> | <img src="./figures/colbert-recall@1000.png" width="97%"> 
 
 Disentangled modeling brings amazing out-of-domain performance gains!
 More details are available in our [paper](https://arxiv.org/pdf/2208.05753.pdf).
@@ -69,12 +84,9 @@ Three special dependencies should be installed manually: disentangled-retriever 
 conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch 
 conda install -c conda-forge faiss-gpu
 ```
-disentangled-retriever also depends on [adapter-transformers](https://github.com/adapter-hub/adapter-transformers). Since the library is still in development and api is unstable, run the following code to install a certain version (commit).
+disentangled-retriever also depends on [adapter-transformers](https://github.com/adapter-hub/adapter-transformers). Install it with the following command.
 ```bash
-git clone git@github.com:adapter-hub/adapter-transformers.git
-cd adapter-transformers
-git checkout 74dd021
-pip install .
+pip install -U adapter-transformers
 ```
 
 After these, now you can install from our code: 
