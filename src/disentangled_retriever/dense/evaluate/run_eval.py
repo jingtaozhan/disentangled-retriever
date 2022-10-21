@@ -93,7 +93,7 @@ def load_or_encode_corpus(model, tokenizer, data_args, eval_args):
             corpus_embeds, corpus_ids = None, None
     else:
         corpus = load_corpus(data_args.corpus_path, verbose=is_main_process(eval_args.local_rank))
-        corpus_embeds, corpus_ids = encode_dense_corpus(corpus, model, tokenizer, eval_args, split_corpus_num=math.ceil(len(corpus)/1_000_000), return_embeds=is_main_process(eval_args.local_rank), verbose=is_main_process(eval_args.local_rank))
+        corpus_embeds, corpus_ids = encode_dense_corpus(corpus, model, tokenizer, eval_args, split_corpus_num=math.ceil(len(corpus)/100_000), return_embeds=is_main_process(eval_args.local_rank), verbose=is_main_process(eval_args.local_rank))
         if is_main_process(eval_args.local_rank) and data_args.save_corpus_embed:
             os.makedirs(data_args.out_corpus_dir, exist_ok=True)
             np.save(out_corpus_embed_path, corpus_embeds)
@@ -147,7 +147,7 @@ def main():
         adapter_name = model.load_adapter(model_args.adapter_name_or_path)
         model.set_active_adapters(adapter_name)
         if model_args.merge_lora:
-            model.merge_lora(adapter_name)
+            model.merge_adapter(adapter_name)
         else:
             logger.info("If your REM has LoRA modules, you can pass --merge_lora argument to merge LoRA weights and speed up inference.")
 
