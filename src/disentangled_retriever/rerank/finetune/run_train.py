@@ -9,55 +9,59 @@ from transformers import (
     AutoTokenizer,
     HfArgumentParser,
     TrainingArguments,
+    AutoAdapterModel,
     set_seed, )
 from transformers.trainer_utils import is_main_process
 from dataclasses import dataclass, field
 
-from .distill_utils import (
-    QDRelDataset, FinetuneCollator,
-    BackboneDistillDenseFinetuner,
-    AdapterDistillDenseFinetuner
-)
-from ..modeling import (
-    AutoDenseModel, 
-    SIMILARITY_METRICS,
-    POOLING_METHODS
+from .train_utils import (
+    TrainRerankDataset, RerankFinetuneCollator,
+    BackboneRerankFinetuner,
+    AdapterRerankFinetuner,
+    load_validation_set
 )
 from ...adapter_arg import (
     AdapterArguments,
     parse_adapter_arguments
 )
-from .validate_utils import load_validation_set
 
 logger = logging.getLogger(__name__)
 
 
 @dataclass
 class DataTrainingArguments:
+    """
+    Arguments pertaining to what data we are going to input our model for training and eval.
+    """
     qrel_path: str = field()
     query_path: str = field()
-    corpus_path: str = field()  
-    max_query_len: int = field()
-    max_doc_len: int = field()  
-    ce_scores_file: str = field()
-    valid_corpus_path : str = field(default=None)
-    valid_query_path : str = field(default=None)
-    valid_qrel_path : str = field(default=None)
+    corpus_path: str = field()
+    candidate_path: str = field(default=None, metadata={"help": "If NONE, use random negatives"})  
+    max_seq_len: int = field(default=512)
+    valid_corpus_path: str = field(default=None)
+    valid_query_path: str = field(default=None)
+    valid_qrel_path: str = field(default=None)
+    valid_candidate_path: str = field(default=None)
+    valid_topk: int = field(default=None)
 
 
 @dataclass
 class ModelArguments:
+    """
+    Arguments pertaining to which model/config/tokenizer we are going to fine-tune, or train from scratch.
+    """
     model_name_or_path: str = field()
-    pooling: str = field(metadata={"choices": POOLING_METHODS})
-    similarity_metric: str = field(metadata={"choices": SIMILARITY_METRICS})
-    new_adapter_name: str = field(default=None)
+    new_adapter_name: str = field(default=None, metadata={
+        "help": "Train a REM module from scratch."})
+    init_adapter_path: str = field(default=None, metadata={
+        "help": "For example, in few-shot settings, REM module will be further trained in the target domain."})
 
 
 @dataclass
-class DenseFinetuneArguments(TrainingArguments):
-    inv_temperature: float = field(default=1)
+class RerankFinetuneArguments(TrainingArguments):
     seed: int = field(default=2022)
     neg_per_query: int = field(default=3)
+    not_train_embedding: bool = field(default=False)
 
     remove_unused_columns: bool = field(default=False)
 
@@ -69,7 +73,7 @@ def main():
 
     parser = HfArgumentParser((
         AdapterArguments,
-        ModelArguments, DataTrainingArguments, DenseFinetuneArguments))
+        ModelArguments, DataTrainingArguments, RerankFinetuneArguments))
     if len(sys.argv) == 2 and sys.argv[1].endswith(".json"):
         # If we pass only one argument to the script and it's the path to a json file,
         # let's parse it to get our arguments.
@@ -100,7 +104,7 @@ def main():
 
     model_args: ModelArguments
     data_args: DataTrainingArguments
-    training_args: DenseFinetuneArguments
+    training_args: RerankFinetuneArguments
 
     # Log on each process the small summary:
     logger.warning(
@@ -120,23 +124,49 @@ def main():
     set_seed(training_args.seed)
 
     config = AutoConfig.from_pretrained(model_args.model_name_or_path)
-    config.similarity_metric = model_args.similarity_metric
-    config.pooling = model_args.pooling
     tokenizer = AutoTokenizer.from_pretrained(
         model_args.model_name_or_path, 
         config = config
     )
-    model = AutoDenseModel.from_pretrained(model_args.model_name_or_path, config=config)
+    model = AutoAdapterModel.from_pretrained(model_args.model_name_or_path, config=config)
 
     if model_args.new_adapter_name is None:
-        logger.info("Add no adapter and only train the backbone")
-        trainer_class = BackboneDistillDenseFinetuner
+        
+        if model_args.init_adapter_path is None:
+            logger.info("Add no adapter and only train the backbone")
+            trainer_class = BackboneRerankFinetuner
+            if hasattr(model, "heads") and "finetune" in list(model.heads):
+                logger.info("Initial model already has finetune-head. Will continue use this head.")
+            else:
+                model.add_classification_head(head_name="finetune", num_labels=1, layers=1, use_pooler=False)
+        else:
+            logger.info(f"Init adapter with {model_args.init_adapter_path} and further train it")
+            trainer_class = AdapterRerankFinetuner
+            adapter_name = model.load_adapter(model_args.init_adapter_path)
+            model.active_head = adapter_name
+            model.train_adapter(adapter_name)
+
+            embedding_path = os.path.join(model_args.init_adapter_path, "embeddings.bin")
+            if os.path.exists(embedding_path):
+                model.base_model.embeddings.load_state_dict(torch.load(embedding_path, map_location="cpu")) 
+                logger.info(f"Overwrite embedding: {embedding_path}")
+            else:
+                logger.info(f"No new embedding available for overwriting.")
+                
+            if not training_args.not_train_embedding:
+                for n, param in model.base_model.embeddings.named_parameters():
+                    param.requires_grad = True
+            logger.info(f"Parameters with gradient: {[n for n, p in model.named_parameters() if p.requires_grad]}")
     else:
-        trainer_class = AdapterDistillDenseFinetuner 
+        trainer_class = AdapterRerankFinetuner 
         model_param_cnt = sum(p.numel() for p in model.parameters() if p.requires_grad)
+        model.add_classification_head(head_name=model_args.new_adapter_name, num_labels=1, layers=1, use_pooler=False)
         adapter_config = parse_adapter_arguments(adapter_args)
         model.add_adapter(model_args.new_adapter_name, config=adapter_config)
         model.train_adapter(model_args.new_adapter_name)
+        if not training_args.not_train_embedding:
+            for n, param in model.base_model.embeddings.named_parameters():
+                param.requires_grad = True
         logger.info(f"Parameters with gradient: {[n for n, p in model.named_parameters() if p.requires_grad]}")
         adapter_param_cnt = sum(p.numel() for p in model.parameters() if p.requires_grad)
         logger.info(f"adapter_param_cnt:{adapter_param_cnt}, model_param_cnt:{model_param_cnt}, ratio:{adapter_param_cnt/model_param_cnt:.4f}")
@@ -146,30 +176,33 @@ def main():
     optimize_param_cnt = sum(p.numel() for p in model.parameters() if p.requires_grad)
     logger.info(f"all_model_param_cnt:{all_model_param_cnt}, optimize_param_cnt:{optimize_param_cnt}, ratio:{optimize_param_cnt/all_model_param_cnt:.4f}")
 
-    train_set = QDRelDataset(tokenizer, 
+    train_set = TrainRerankDataset(
+            tokenizer = tokenizer, 
             qrel_path = data_args.qrel_path, 
             query_path = data_args.query_path, 
             corpus_path = data_args.corpus_path, 
-            max_query_len = data_args.max_query_len, 
-            max_doc_len = data_args.max_doc_len, 
+            candidate_path = data_args.candidate_path,
             neg_per_query = training_args.neg_per_query,
-            ce_scores_file = data_args.ce_scores_file,            
             verbose=is_main_process(training_args.local_rank))
     # Data collator
-    data_collator = FinetuneCollator(
+    data_collator = RerankFinetuneCollator(
         tokenizer = tokenizer,
-        max_query_len = data_args.max_query_len, 
-        max_doc_len = data_args.max_doc_len,
+        max_seq_len = data_args.max_seq_len, 
     )
     if data_args.valid_corpus_path is None:
         eval_dataset = None
-        assert data_args.valid_query_path is None and data_args.valid_qrel_path is None
     else:
         eval_dataset=load_validation_set(
             data_args.valid_corpus_path,
             data_args.valid_query_path,
+            data_args.valid_candidate_path,
             data_args.valid_qrel_path,
         )
+        logger.info(f"All validation pairs: {sum((len(v) for v in eval_dataset[2].values()))}")
+        if data_args.valid_topk is not None:
+            new_candidates = {k: v[:data_args.valid_topk] for k, v in eval_dataset[2].items()}
+            eval_dataset = (eval_dataset[0], eval_dataset[1], new_candidates, eval_dataset[3])
+            logger.info(f"New validation pairs: {sum((len(v) for v in eval_dataset[2].values()))}")
 
     trainer = trainer_class(
         model=model,
@@ -179,8 +212,10 @@ def main():
         data_collator=data_collator,
         eval_dataset=eval_dataset
     )
+    # additionally save checkpoint at the end of one epoch
     trainer.train(resume_from_checkpoint=resume_from_checkpoint)
-    trainer.save_model()
+    if is_main_process(training_args.local_rank):
+        trainer.save_model()
 
 
 def _mp_fn(index):

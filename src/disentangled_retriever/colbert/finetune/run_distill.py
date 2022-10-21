@@ -15,19 +15,14 @@ from dataclasses import dataclass, field
 
 from .distill_utils import (
     QDRelDataset, FinetuneCollator,
-    BackboneDistillDenseFinetuner,
-    AdapterDistillDenseFinetuner
+    BackboneDistillColBERTFinetuner,
+    AdapterDistillColBERTFinetuner
 )
-from ..modeling import (
-    AutoDenseModel, 
-    SIMILARITY_METRICS,
-    POOLING_METHODS
-)
+from ..modeling import AutoColBERTModel
 from ...adapter_arg import (
     AdapterArguments,
     parse_adapter_arguments
 )
-from .validate_utils import load_validation_set
 
 logger = logging.getLogger(__name__)
 
@@ -40,17 +35,13 @@ class DataTrainingArguments:
     max_query_len: int = field()
     max_doc_len: int = field()  
     ce_scores_file: str = field()
-    valid_corpus_path : str = field(default=None)
-    valid_query_path : str = field(default=None)
-    valid_qrel_path : str = field(default=None)
 
 
 @dataclass
 class ModelArguments:
     model_name_or_path: str = field()
-    pooling: str = field(metadata={"choices": POOLING_METHODS})
-    similarity_metric: str = field(metadata={"choices": SIMILARITY_METRICS})
     new_adapter_name: str = field(default=None)
+    output_dim: str = field(default=32)
 
 
 @dataclass
@@ -120,22 +111,22 @@ def main():
     set_seed(training_args.seed)
 
     config = AutoConfig.from_pretrained(model_args.model_name_or_path)
-    config.similarity_metric = model_args.similarity_metric
-    config.pooling = model_args.pooling
     tokenizer = AutoTokenizer.from_pretrained(
         model_args.model_name_or_path, 
         config = config
     )
-    model = AutoDenseModel.from_pretrained(model_args.model_name_or_path, config=config)
+    model = AutoColBERTModel.from_pretrained(model_args.model_name_or_path, config=config)
 
     if model_args.new_adapter_name is None:
         logger.info("Add no adapter and only train the backbone")
-        trainer_class = BackboneDistillDenseFinetuner
+        trainer_class = BackboneDistillColBERTFinetuner
+        model.add_pooling_layer("col_pooling", model_args.output_dim)
     else:
-        trainer_class = AdapterDistillDenseFinetuner 
+        trainer_class = AdapterDistillColBERTFinetuner 
         model_param_cnt = sum(p.numel() for p in model.parameters() if p.requires_grad)
         adapter_config = parse_adapter_arguments(adapter_args)
         model.add_adapter(model_args.new_adapter_name, config=adapter_config)
+        model.add_pooling_layer(model_args.new_adapter_name, model_args.output_dim)
         model.train_adapter(model_args.new_adapter_name)
         logger.info(f"Parameters with gradient: {[n for n, p in model.named_parameters() if p.requires_grad]}")
         adapter_param_cnt = sum(p.numel() for p in model.parameters() if p.requires_grad)
@@ -160,16 +151,9 @@ def main():
         tokenizer = tokenizer,
         max_query_len = data_args.max_query_len, 
         max_doc_len = data_args.max_doc_len,
+        padding = 'max_length'
     )
-    if data_args.valid_corpus_path is None:
-        eval_dataset = None
-        assert data_args.valid_query_path is None and data_args.valid_qrel_path is None
-    else:
-        eval_dataset=load_validation_set(
-            data_args.valid_corpus_path,
-            data_args.valid_query_path,
-            data_args.valid_qrel_path,
-        )
+    eval_dataset = None
 
     trainer = trainer_class(
         model=model,

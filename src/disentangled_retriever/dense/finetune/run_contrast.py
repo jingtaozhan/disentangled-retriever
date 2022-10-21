@@ -1,3 +1,4 @@
+from curses import meta
 import os
 import sys
 import logging
@@ -22,7 +23,7 @@ from .contrast_utils import (
     AdapterContrastDenseFinetuner, 
     QDRelDataset, FinetuneCollator
 )
-from .adapter_arg import (
+from ...adapter_arg import (
     AdapterArguments,
     parse_adapter_arguments
 )
@@ -48,7 +49,10 @@ class ModelArguments:
     model_name_or_path: str = field()
     pooling: str = field(metadata={"choices": POOLING_METHODS})
     similarity_metric: str = field(metadata={"choices": SIMILARITY_METRICS})
-    new_adapter_name: str = field(default=None)
+    new_adapter_name: str = field(default=None, metadata={
+        "help": "Train a REM module from scratch."})
+    init_adapter_path: str = field(default=None, metadata={
+        "help": "For example, in few-shot settings, REM module will be further trained in the target domain."})
 
 
 @dataclass
@@ -128,8 +132,13 @@ def main():
     model = AutoDenseModel.from_pretrained(model_args.model_name_or_path, config=config)
 
     if model_args.new_adapter_name is None:
-        logger.info("Add no adapter and only train the backbone")
-        trainer_class = BackboneContrastDenseFinetuner
+        if model_args.init_adapter_path is None:
+            logger.info("Add no adapter and only train the backbone")
+            trainer_class = BackboneContrastDenseFinetuner
+        else:
+            logger.info(f"Init adapter with {model_args.init_adapter_path} and further train it")
+            trainer_class = AdapterContrastDenseFinetuner
+            model.train_adapter(model.load_adapter(model_args.init_adapter_path))
     else:
         trainer_class = AdapterContrastDenseFinetuner
         model_param_cnt = sum(p.numel() for p in model.parameters() if p.requires_grad)

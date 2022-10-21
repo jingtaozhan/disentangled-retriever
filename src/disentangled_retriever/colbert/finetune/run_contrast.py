@@ -1,36 +1,30 @@
 import os
 import sys
-import torch
 import logging
+from dataclasses import dataclass, field
+from typing import List, Dict, Any, Union, Optional
+
 import transformers
-from typing import List
 from transformers import (
-    AutoConfig,
     AutoTokenizer,
     HfArgumentParser,
     TrainingArguments,
-    set_seed, )
+    set_seed, AutoConfig)
 from transformers.trainer_utils import is_main_process
-from dataclasses import dataclass, field
 
-from .distill_utils import (
-    QDRelDataset, FinetuneCollator,
-    BackboneDistillDenseFinetuner,
-    AdapterDistillDenseFinetuner
-)
-from ..modeling import (
-    AutoDenseModel, 
-    SIMILARITY_METRICS,
-    POOLING_METHODS
+from ..modeling import AutoColBERTModel
+from .contrast_utils import (
+    BackboneContrastColBERTFinetuner,
+    AdapterContrastColBERTFinetuner, 
+    QDRelDataset, FinetuneCollator
 )
 from ...adapter_arg import (
     AdapterArguments,
     parse_adapter_arguments
 )
-from .validate_utils import load_validation_set
+
 
 logger = logging.getLogger(__name__)
-
 
 @dataclass
 class DataTrainingArguments:
@@ -39,25 +33,23 @@ class DataTrainingArguments:
     corpus_path: str = field()  
     max_query_len: int = field()
     max_doc_len: int = field()  
-    ce_scores_file: str = field()
-    valid_corpus_path : str = field(default=None)
-    valid_query_path : str = field(default=None)
-    valid_qrel_path : str = field(default=None)
-
+    
 
 @dataclass
 class ModelArguments:
     model_name_or_path: str = field()
-    pooling: str = field(metadata={"choices": POOLING_METHODS})
-    similarity_metric: str = field(metadata={"choices": SIMILARITY_METRICS})
-    new_adapter_name: str = field(default=None)
-
+    new_adapter_name: str = field(default=None, metadata={
+        "help": "Train a REM module from scratch."})
+    init_adapter_path: str = field(default=None, metadata={
+        "help": "For example, in few-shot settings, REM module will be further trained in the target domain."})
+    output_dim: str = field(default=32)
 
 @dataclass
 class DenseFinetuneArguments(TrainingArguments):
     inv_temperature: float = field(default=1)
+    negative: str = field(default="random")
+    neg_per_query: int = field(default=1)
     seed: int = field(default=2022)
-    neg_per_query: int = field(default=3)
 
     remove_unused_columns: bool = field(default=False)
 
@@ -120,27 +112,38 @@ def main():
     set_seed(training_args.seed)
 
     config = AutoConfig.from_pretrained(model_args.model_name_or_path)
-    config.similarity_metric = model_args.similarity_metric
-    config.pooling = model_args.pooling
     tokenizer = AutoTokenizer.from_pretrained(
         model_args.model_name_or_path, 
         config = config
     )
-    model = AutoDenseModel.from_pretrained(model_args.model_name_or_path, config=config)
+    model = AutoColBERTModel.from_pretrained(model_args.model_name_or_path, config=config)
 
     if model_args.new_adapter_name is None:
-        logger.info("Add no adapter and only train the backbone")
-        trainer_class = BackboneDistillDenseFinetuner
+        if model_args.init_adapter_path is None:
+            logger.info("Add no adapter and only train the backbone")
+            trainer_class = BackboneContrastColBERTFinetuner
+            if hasattr(model, "heads") and "col_pooling" in list(model.heads):
+                logger.info("Initial model already has colbert-pooling-head. Will continue use this head.")
+            else:
+                model.add_pooling_layer("col_pooling", model_args.output_dim)
+        else:
+            logger.info(f"Init adapter with {model_args.init_adapter_path} and further train it")
+            trainer_class = AdapterContrastColBERTFinetuner
+            adapter_name = model.load_adapter(model_args.init_adapter_path)
+            model.active_head = adapter_name
+            model.train_adapter(adapter_name)
+            logger.info(f"Parameters with gradient: {[n for n, p in model.named_parameters() if p.requires_grad]}")
     else:
-        trainer_class = AdapterDistillDenseFinetuner 
+        trainer_class = AdapterContrastColBERTFinetuner
         model_param_cnt = sum(p.numel() for p in model.parameters() if p.requires_grad)
         adapter_config = parse_adapter_arguments(adapter_args)
         model.add_adapter(model_args.new_adapter_name, config=adapter_config)
+        model.add_pooling_layer(model_args.new_adapter_name, model_args.output_dim)
         model.train_adapter(model_args.new_adapter_name)
         logger.info(f"Parameters with gradient: {[n for n, p in model.named_parameters() if p.requires_grad]}")
         adapter_param_cnt = sum(p.numel() for p in model.parameters() if p.requires_grad)
         logger.info(f"adapter_param_cnt:{adapter_param_cnt}, model_param_cnt:{model_param_cnt}, ratio:{adapter_param_cnt/model_param_cnt:.4f}")
-    
+
     logger.info(f"Trainer Class: {trainer_class}")
     all_model_param_cnt = sum(p.numel() for p in model.parameters())
     optimize_param_cnt = sum(p.numel() for p in model.parameters() if p.requires_grad)
@@ -152,26 +155,22 @@ def main():
             corpus_path = data_args.corpus_path, 
             max_query_len = data_args.max_query_len, 
             max_doc_len = data_args.max_doc_len, 
+            rel_threshold = 1, 
+            negative = training_args.negative,
             neg_per_query = training_args.neg_per_query,
-            ce_scores_file = data_args.ce_scores_file,            
             verbose=is_main_process(training_args.local_rank))
     # Data collator
     data_collator = FinetuneCollator(
         tokenizer = tokenizer,
         max_query_len = data_args.max_query_len, 
         max_doc_len = data_args.max_doc_len,
+        padding = 'max_length'
     )
-    if data_args.valid_corpus_path is None:
-        eval_dataset = None
-        assert data_args.valid_query_path is None and data_args.valid_qrel_path is None
-    else:
-        eval_dataset=load_validation_set(
-            data_args.valid_corpus_path,
-            data_args.valid_query_path,
-            data_args.valid_qrel_path,
-        )
-
+    eval_dataset = None
+        
+    # Initialize our Trainer
     trainer = trainer_class(
+        qrels=train_set.get_qrels(),
         model=model,
         args=training_args,
         train_dataset=train_set,
@@ -179,6 +178,7 @@ def main():
         data_collator=data_collator,
         eval_dataset=eval_dataset
     )
+
     trainer.train(resume_from_checkpoint=resume_from_checkpoint)
     trainer.save_model()
 

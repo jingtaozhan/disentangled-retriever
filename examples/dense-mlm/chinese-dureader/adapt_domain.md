@@ -5,7 +5,7 @@ We use CPR-Ecommerce as an example. To adapt to an unseen domain, we unsupervise
 output_dir="./data/dense-mlm/chinese-dureader/adapt_domain/cpr-ecom"
 
 python -m torch.distributed.launch --nproc_per_node 4 \
-    -m disentangled_retriever.dense.adapt.run_adapt_with_mlm \
+    -m disentangled_retriever.adapt.run_adapt_with_mlm \
     --corpus_path ./data/datasets/cpr-ecom/corpus.tsv \
     --output_dir $output_dir \
     --model_name_or_path jingtao/DAM-bert_base-mlm-dureader \

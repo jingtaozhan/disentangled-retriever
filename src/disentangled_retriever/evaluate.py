@@ -21,8 +21,8 @@ def truncate_run(run: Dict[str, Dict[str, float]], topk: int):
 def pytrec_evaluate(
         qrel: Union[str, Dict[str, Dict[str, int]]], 
         run: Union[str, Dict[str, float]],
-        k_values =(1, 3, 5, 10, 100),
-        mrr_k_values = (10, 100),
+        k_values =(1, 3, 5, 10, 100, 1000),
+        mrr_k_values = (10, 100, 1000),
         recall_k_values = (10, 50, 100, 200, 500, 1000),
         relevance_level = 1,
         ):
