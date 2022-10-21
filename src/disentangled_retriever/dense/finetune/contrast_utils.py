@@ -21,16 +21,17 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class FinetuneCollator:
-    def __init__(self, tokenizer: PreTrainedTokenizer, max_query_len: int, max_doc_len: int, ):
+    def __init__(self, tokenizer: PreTrainedTokenizer, max_query_len: int, max_doc_len: int, padding=True):
         self.tokenizer = tokenizer
         self.max_query_len = max_query_len
         self.max_doc_len = max_doc_len
+        self.padding = padding
 
     def __call__(self, features: List[Dict[str, Any]]) -> Dict[str, Any]:
         # tokenizing batch of text is much faster
         query_input = self.tokenizer(
             [x['query'] for x in features],
-            padding=True,
+            padding=self.padding,
             return_tensors='pt',
             add_special_tokens=True,
             return_attention_mask=True,
@@ -41,7 +42,7 @@ class FinetuneCollator:
         query_input['position_ids'] = torch.arange(0, query_input['input_ids'].size(1))[None, :]
         doc_input = self.tokenizer(
             [x['doc'] for x in features],
-            padding=True,
+            padding=self.padding,
             return_tensors='pt',
             add_special_tokens=True,
             return_attention_mask=True,
@@ -65,7 +66,7 @@ class FinetuneCollator:
         if 'neg_docs' in features[0]:
             neg_doc_input = self.tokenizer(
                 sum([x['neg_docs'] for x in features], []),
-                padding=True,
+                padding=self.padding,
                 return_tensors='pt',
                 add_special_tokens=True,
                 return_attention_mask=True,
