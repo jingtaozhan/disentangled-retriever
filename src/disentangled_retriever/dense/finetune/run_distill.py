@@ -23,7 +23,7 @@ from ..modeling import (
     SIMILARITY_METRICS,
     POOLING_METHODS
 )
-from .adapter_arg import (
+from ...adapter_arg import (
     AdapterArguments,
     parse_adapter_arguments
 )
