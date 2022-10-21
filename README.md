@@ -37,7 +37,8 @@ This is the official repo for our paper [Disentangled Modeling of Domain and Rel
 - [Released Models](#released-models)
 - [Example Usage](#example-usage)
 - [Preparing Datasets](#preparing-datasets)
-- [Unsupervisedly Adapting to an Unseen Domain](#unsupervisedly-adapting-to-an-unseen-domain)
+- [Zero-shot Domain Adaption](#zero-shot-domain-adaption)
+- [Few-shot Domain Adaption](#few-shot-domain-adaption)
 - [Learning Generic Relevance Estimation Ability](#learning-generic-relevance-estimation-ability)
 - [Reproducing Results with Released Checkpoints](#reproducing-results-with-released-checkpoints)
 - [Training Vanilla Neural Ranking Models](#training-vanilla-neural-ranking-models)
@@ -267,7 +268,7 @@ We will use various datasets to show how disentangled modeling facilitates flexi
 - [Preparing Chinese training data and out-of-domain test sets](./examples/dense-mlm/chinese-dureader/prepare_dataset/README.md)
 
 
-## Unsupervisedly Adapting to an Unseen Domain
+## Zero-shot Domain Adaption
 
 Suppose you already have a REM module (trained by yourself or provided by us) and you need to adapt the model to an unseen domain. To do this, just train a Domain Adaption Module (DAM) to mitigate the domain shift. 
 
@@ -296,6 +297,10 @@ python -m torch.distributed.launch --nproc_per_node 4 \
 ```
 
 We give an adaption example [here](./examples/dense-mlm/english-marco/adapt_domain.md) with detailed instructions. Please trying this example before using our methods on your own datasets.
+
+## Few-shot Domain Adaption
+
+Coming soon.
 
 ## Learning Generic Relevance Estimation Ability
 
