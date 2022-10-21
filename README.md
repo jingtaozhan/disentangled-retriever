@@ -78,15 +78,11 @@ More details are available in our [paper](https://arxiv.org/pdf/2208.05753.pdf).
 
 ## Installation
 
-Three special dependencies should be installed manually: disentangled-retriever depends on [PyTorch](https://pytorch.org/get-started/locally/) and [Faiss](https://github.com/facebookresearch/faiss/blob/main/INSTALL.md), which require platform-specific custom configuration. They are not listed in the requirements and the installation is left to you. In our development, we run the following commands for installation.
+This repo is developed with [PyTorch]((https://pytorch.org/get-started/locally/)) and [Faiss](https://github.com/facebookresearch/faiss/blob/main/INSTALL.md). They should be installed manually due to the requirement of platform-specific custom configuration. In our development, we run the following commands for installation.
 ```bash
-# choose cudatoolkit version according to your environment
-conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch 
+# XX.X is a placeholder for cudatoolkit version. It should be specified according to your environment
+conda install pytorch torchvision torchaudio cudatoolkit=XX.X -c pytorch 
 conda install -c conda-forge faiss-gpu
-```
-disentangled-retriever also depends on [adapter-transformers](https://github.com/adapter-hub/adapter-transformers). Install it with the following command.
-```bash
-pip install -U adapter-transformers
 ```
 
 After these, now you can install from our code: 
@@ -102,32 +98,133 @@ pip install --editable .
 
 ### Trained Models
 
-We provide the following trained models to facilitate reproducibility and reusage. You do not have to manually download these. **They will be automatically downloaded at runtime.**
-- Relevance Estimation Module (REM)
-    - (English) Contrastively trained on MS MARCO Passage Ranking: https://huggingface.co/jingtao/REM-bert_base-dense-contrast-msmarco/resolve/main/lora192-pa4.zip
-    - (English) Knowledge distilled on MS MARCO Passage Ranking: https://huggingface.co/jingtao/REM-bert_base-dense-distil-msmarco/resolve/main/lora192-pa4.zip
-    - (Chinese) Contrastively trained on Dureader: https://huggingface.co/jingtao/REM-bert_base-dense-contrast-dureader/resolve/main/lora192-pa4.zip
-    - (Chinese) Knowledge distilled on Dureader: https://huggingface.co/jingtao/REM-bert_base-dense-distil-dureader/resolve/main/lora192-pa4.zip
-- Domain Adaption Module (DAM)
-    - Trained on English test sets (Masked Language Modeling)
-        - Trained on MS MARCO Passage corpus: [jingtao/DAM-bert_base-mlm-msmarco](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco)
-        - Trained on TREC-Covid corpus: [jingtao/DAM-bert_base-mlm-msmarco-trec_covid](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco-trec_covid)
-        - Trained on Lotte-Writing corpus: [jingtao/DAM-bert_base-mlm-msmarco-lotte_write_test](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco-lotte_write_test)
-        - Trained on Lotte-Recreation corpus: [jingtao/DAM-bert_base-mlm-msmarco-lotte_rec_test](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco-lotte_rec_test)
-        - Trained on Lotte-Technology corpus: [jingtao/DAM-bert_base-mlm-msmarco-lotte_tech_test](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco-lotte_tech_test)
-        - Trained on Lotte-Lifestyle corpus: [jingtao/DAM-bert_base-mlm-msmarco-lotte_life_test](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco-lotte_life_test)
-        - Trained on Lotte-Science corpus: [jingtao/DAM-bert_base-mlm-msmarco-lotte_sci_test](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco-lotte_sci_test)
-    - Trained on Chinese test sets (Masked Language Modeling)
-        - Trained on Dureader corpus: [jingtao/DAM-bert_base-mlm-dureader](https://huggingface.co/jingtao/DAM-bert_base-mlm-dureader)
-        - Trained on CPR-Ecommerce corpus: [jingtao/DAM-bert_base-mlm-dureader-cpr_ecom](https://huggingface.co/jingtao/DAM-bert_base-mlm-dureader-cpr_ecom)
-        - Trained on CPR-Video corpus: [jingtao/DAM-bert_base-mlm-dureader-cpr_video](https://huggingface.co/jingtao/DAM-bert_base-mlm-dureader-cpr_video)
-        - Trained on CPR-Medical corpus: [jingtao/DAM-bert_base-mlm-dureader-cpr_medical](https://huggingface.co/jingtao/DAM-bert_base-mlm-dureader-cpr_medical)
-        - Trained on cMedQAv2 corpus: [jingtao/DAM-bert_base-mlm-dureader-cmedqav2](https://huggingface.co/jingtao/DAM-bert_base-mlm-dureader-cmedqav2)
-- Dense Retrieval Models
-    - (English) Contrastively trained on MS MARCO Passage Ranking: [jingtao/Dense-bert_base-contrast-msmarco](https://huggingface.co/jingtao/Dense-bert_base-contrast-msmarco)
-    - (English) Knowledge distilled on MS MARCO Passage Ranking: [jingtao/Dense-bert_base-distil-msmarco](https://huggingface.co/jingtao/Dense-bert_base-distil-msmarco)
-    - (Chinese) Contrastively trained on Dureader: [jingtao/Dense-bert_base-contrast-dureader](https://huggingface.co/jingtao/Dense-bert_base-contrast-dureader)
-    - (Chinese) Knowledge distilled on Dureader: [jingtao/Dense-bert_base-distil-dureader](https://huggingface.co/jingtao/Dense-bert_base-distil-dureader)
+We provide trained models to facilitate reproducibility and reusage. You do not have to manually download these. **They will be automatically downloaded at runtime.**
+
+<details>
+  <summary> Relevance Estimation Modules for Dense Retrieval (<i>click to expand</i>)</summary>
+
+- (English) Contrastively trained on MS MARCO Passage Ranking: https://huggingface.co/jingtao/REM-bert_base-dense-contrast-msmarco/resolve/main/lora192-pa4.zip
+- (English) Knowledge distilled on MS MARCO Passage Ranking: https://huggingface.co/jingtao/REM-bert_base-dense-distil-msmarco/resolve/main/lora192-pa4.zip
+- (Chinese) Contrastively trained on Dureader: https://huggingface.co/jingtao/REM-bert_base-dense-contrast-dureader/resolve/main/lora192-pa4.zip
+- (Chinese) Knowledge distilled on Dureader: https://huggingface.co/jingtao/REM-bert_base-dense-distil-dureader/resolve/main/lora192-pa4.zip
+
+</details>
+
+<details>
+  <summary> Relevance Estimation Modules for UniCOIL (<i>click to expand</i>)</summary>
+
+- (English) Contrastively trained on MS MARCO Passage Ranking: https://huggingface.co/jingtao/REM-bert_base-unicoil-contrast-msmarco/resolve/main/lora192-pa4.zip
+- (English) Knowledge distilled on MS MARCO Passage Ranking: https://huggingface.co/jingtao/REM-bert_base-unicoil-distil-msmarco/resolve/main/lora192-pa4.zip
+- (Chinese) Contrastively trained on Dureader: https://huggingface.co/jingtao/REM-bert_base-unicoil-contrast-dureader/resolve/main/lora192-pa4.zip
+- (Chinese) Knowledge distilled on Dureader: https://huggingface.co/jingtao/REM-bert_base-unicoil-distil-dureader/resolve/main/lora192-pa4.zip
+
+</details>
+
+<details>
+  <summary> Relevance Estimation Modules for SPLADE (<i>click to expand</i>)</summary>
+
+- (English) Contrastively trained on MS MARCO Passage Ranking: https://huggingface.co/jingtao/REM-bert_base-splade-contrast-msmarco/resolve/main/lora192-pa4.zip
+- (English) Knowledge distilled on MS MARCO Passage Ranking: https://huggingface.co/jingtao/REM-bert_base-splade-distil-msmarco/resolve/main/lora192-pa4.zip
+- (Chinese) Contrastively trained on Dureader: https://huggingface.co/jingtao/REM-bert_base-splade-contrast-dureader/resolve/main/lora192-pa4.zip
+- (Chinese) Knowledge distilled on Dureader: https://huggingface.co/jingtao/REM-bert_base-splade-distil-dureader/resolve/main/lora192-pa4.zip
+
+</details>
+
+<details>
+  <summary> Relevance Estimation Modules for ColBERT (<i>click to expand</i>)</summary>
+
+- (English) Contrastively trained on MS MARCO Passage Ranking: https://huggingface.co/jingtao/REM-bert_base-colbert-contrast-msmarco/resolve/main/lora192-pa4.zip
+- (English) Knowledge distilled on MS MARCO Passage Ranking: https://huggingface.co/jingtao/REM-bert_base-colbert-distil-msmarco/resolve/main/lora192-pa4.zip
+- (Chinese) Contrastively trained on Dureader: https://huggingface.co/jingtao/REM-bert_base-colbert-contrast-dureader/resolve/main/lora192-pa4.zip
+- (Chinese) Knowledge distilled on Dureader: https://huggingface.co/jingtao/REM-bert_base-colbert-distil-dureader/resolve/main/lora192-pa4.zip
+
+</details>
+
+<details>
+  <summary> Relevance Estimation Modules for BERT re-ranker (<i>click to expand</i>)</summary>
+
+- (English) Trained on MS MARCO Passage Ranking: https://huggingface.co/jingtao/REM-bert_base-rerank-msmarco/resolve/main/lora192-pa4.zip
+- (Chinese) Trained on Dureader: https://huggingface.co/jingtao/REM-bert_base-rerank-dureader/resolve/main/lora192-pa4.zip
+
+</details>
+
+<details>
+  <summary> Domain Adaption Modules for various datasets  (<i>click to expand</i>)</summary>
+
+- Trained on English test sets (Masked Language Modeling)
+    - Trained on MS MARCO Passage corpus: [jingtao/DAM-bert_base-mlm-msmarco](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco)
+    - Trained on TREC-Covid corpus: [jingtao/DAM-bert_base-mlm-msmarco-trec_covid](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco-trec_covid)
+    - Trained on Lotte-Writing corpus: [jingtao/DAM-bert_base-mlm-msmarco-lotte_write_test](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco-lotte_write_test)
+    - Trained on Lotte-Recreation corpus: [jingtao/DAM-bert_base-mlm-msmarco-lotte_rec_test](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco-lotte_rec_test)
+    - Trained on Lotte-Technology corpus: [jingtao/DAM-bert_base-mlm-msmarco-lotte_tech_test](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco-lotte_tech_test)
+    - Trained on Lotte-Lifestyle corpus: [jingtao/DAM-bert_base-mlm-msmarco-lotte_life_test](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco-lotte_life_test)
+    - Trained on Lotte-Science corpus: [jingtao/DAM-bert_base-mlm-msmarco-lotte_sci_test](https://huggingface.co/jingtao/DAM-bert_base-mlm-msmarco-lotte_sci_test)
+- Trained on Chinese test sets (Masked Language Modeling)
+    - Trained on Dureader corpus: [jingtao/DAM-bert_base-mlm-dureader](https://huggingface.co/jingtao/DAM-bert_base-mlm-dureader)
+    - Trained on CPR-Ecommerce corpus: [jingtao/DAM-bert_base-mlm-dureader-cpr_ecom](https://huggingface.co/jingtao/DAM-bert_base-mlm-dureader-cpr_ecom)
+    - Trained on CPR-Video corpus: [jingtao/DAM-bert_base-mlm-dureader-cpr_video](https://huggingface.co/jingtao/DAM-bert_base-mlm-dureader-cpr_video)
+    - Trained on CPR-Medical corpus: [jingtao/DAM-bert_base-mlm-dureader-cpr_medical](https://huggingface.co/jingtao/DAM-bert_base-mlm-dureader-cpr_medical)
+    - Trained on cMedQAv2 corpus: [jingtao/DAM-bert_base-mlm-dureader-cmedqav2](https://huggingface.co/jingtao/DAM-bert_base-mlm-dureader-cmedqav2)
+    
+</details>
+
+
+Besides Disentangled Neural Ranking models, we also release the vanilla/traditional neural ranking models, which are baselines in our paper.
+<details>
+  <summary> Vanilla Neural Ranking Checkpoints (<i>click to expand</i>)</summary>
+
+<details>
+  <summary> Vanilla Dense Retrieval (<i>click to expand</i>)</summary>
+
+- (English) Contrastively trained on MS MARCO Passage Ranking: [jingtao/Dense-bert_base-contrast-msmarco](https://huggingface.co/jingtao/Dense-bert_base-contrast-msmarco)
+- (English) Knowledge distilled on MS MARCO Passage Ranking: [jingtao/Dense-bert_base-distil-msmarco](https://huggingface.co/jingtao/Dense-bert_base-distil-msmarco)
+- (Chinese) Contrastively trained on Dureader: [jingtao/Dense-bert_base-contrast-dureader](https://huggingface.co/jingtao/Dense-bert_base-contrast-dureader)
+- (Chinese) Knowledge distilled on Dureader: [jingtao/Dense-bert_base-distil-dureader](https://huggingface.co/jingtao/Dense-bert_base-distil-dureader)
+
+
+</details>
+
+<details>
+  <summary> Vanilla uniCOIL (<i>click to expand</i>)</summary>
+
+- (English) Contrastively trained on MS MARCO Passage Ranking: [jingtao/uniCOIL-bert_base-contrast-msmarco](https://huggingface.co/jingtao/uniCOIL-bert_base-contrast-msmarco)
+- (English) Knowledge distilled on MS MARCO Passage Ranking: [jingtao/uniCOIL-bert_base-distil-msmarco](https://huggingface.co/jingtao/uniCOIL-bert_base-distil-msmarco)
+- (Chinese) Contrastively trained on Dureader: [jingtao/uniCOIL-bert_base-contrast-dureader](https://huggingface.co/jingtao/uniCOIL-bert_base-contrast-dureader)
+- (Chinese) Knowledge distilled on Dureader: [jingtao/uniCOIL-bert_base-distil-dureader](https://huggingface.co/jingtao/uniCOIL-bert_base-distil-dureader)
+
+</details>
+
+<details>
+  <summary> Vanilla SPLADE (<i>click to expand</i>)</summary>
+
+- (English) Contrastively trained on MS MARCO Passage Ranking: [jingtao/SPLADE-bert_base-contrast-msmarco](https://huggingface.co/jingtao/SPLADE-bert_base-contrast-msmarco)
+- (English) Knowledge distilled on MS MARCO Passage Ranking: [jingtao/SPLADE-bert_base-distil-msmarco](https://huggingface.co/jingtao/SPLADE-bert_base-distil-msmarco)
+- (Chinese) Contrastively trained on Dureader: [jingtao/SPLADE-bert_base-contrast-dureader](https://huggingface.co/jingtao/SPLADE-bert_base-contrast-dureader)
+- (Chinese) Knowledge distilled on Dureader: [jingtao/SPLADE-bert_base-distil-dureader](https://huggingface.co/jingtao/SPLADE-bert_base-distil-dureader)
+
+</details>
+
+<details>
+  <summary> Vanilla ColBERT (<i>click to expand</i>)</summary>
+
+- (English) Contrastively trained on MS MARCO Passage Ranking: [jingtao/ColBERT-bert_base-contrast-msmarco](https://huggingface.co/jingtao/ColBERT-bert_base-contrast-msmarco)
+- (English) Knowledge distilled on MS MARCO Passage Ranking: [jingtao/ColBERT-bert_base-distil-msmarco](https://huggingface.co/jingtao/ColBERT-bert_base-distil-msmarco)
+- (Chinese) Contrastively trained on Dureader: [jingtao/ColBERT-bert_base-contrast-dureader](https://huggingface.co/jingtao/ColBERT-bert_base-contrast-dureader)
+- (Chinese) Knowledge distilled on Dureader: [jingtao/ColBERT-bert_base-distil-dureader](https://huggingface.co/jingtao/ColBERT-bert_base-distil-dureader)
+
+</details>
+
+<details>
+  <summary> Vanilla BERT re-ranker (<i>click to expand</i>)</summary>
+
+- (English) Trained on MS MARCO Passage Ranking: [jingtao/Rerank-bert_base-msmarco](https://huggingface.co/jingtao/Rerank-bert_base-msmarco)
+- (Chinese) Trained on Dureader:[jingtao/Rerank-bert_base-dureader](https://huggingface.co/jingtao/Rerank-bert_base-dureader)
+
+</details>
+
+
+</details>
+*Note: Our code also supports training and evaluating vanilla neural ranking models!*
 
 ## Example usage:
 ```python
