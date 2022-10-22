@@ -23,10 +23,10 @@ This is the official repo for our paper [Disentangled Modeling of Domain and Rel
 
 ## Features
 
+- *One command for unsupervised and effective domain adaption.*
+- *One command for effective few-shot domain adaption.*
 - Various ranking architectures, including Dense Retrieval, uniCOIL, SPLADE, ColBERT, and BERT re-ranker. 
 - Two source-domain finetuning methods, contrastive finetuning and distillation. 
-- *One command line for unsupervised and effective domain adaption.*
-- *One command line for effective few-shot domain adaption.*
 - Huggingface-style training and inference, supporting multi-gpus, mixed precision, etc.
 
 
@@ -324,10 +324,10 @@ With formatted supervised data, now you can train a REM module. We use a disenta
 
 Here we provide instructions about training REMs for different ranking methods.
 - Train REM for Dense Retrieval: [on English MS MARCO](./examples/dense/english-marco/train_rem.md) | [on Chinese Dureader](./examples/dense/chinese-dureader/train_rem.md)
-- Train REM for uniCOIL: [on English] [on Chinese]
-- Train REM for SPLADE: [on English] [on Chinese]
-- Train REM for ColBERT: [on English] [on Chinese]
-- Train REM for BERT re-ranker: [on English] [on Chinese]
+- Train REM for uniCOIL: [on English] [on Chinese] (coming soon)
+- Train REM for SPLADE: [on English] [on Chinese] (coming soon) 
+- Train REM for ColBERT: [on English] [on Chinese] (coming soon)
+- Train REM for BERT re-ranker: [on English] [on Chinese] (coming soon)
 
 ## Reproducing Results with Released Checkpoints
 
@@ -336,9 +336,12 @@ We provide commands for reproducing the various results in our [paper](https://a
   - [Evaluating Disentangled Dense Retrieval on English out-of-domain datasets](./examples/dense/english-marco/inference.md)
   - [Evaluating Disentangled Dense Retrieval on Chinese out-of-domain datasets](./examples/dense/chinese-dureader/inference.md)
 - Evaluating Disentangled uniCOIL
-- Evaluating Disentangled SPLADE
-- Evaluating Disentangled ColBERT
-- Evaluating Disentangled BERT re-ranker
+  - [Evaluating Disentangled Dense Retrieval on English out-of-domain datasets](./examples/unicoil/english-marco/inference.md)
+  - [Evaluating Disentangled Dense Retrieval on Chinese out-of-domain datasets](./examples/unicoil/chinese-dureader/inference.md)
+- Evaluating Disentangled SPLADE (coming soon)
+- Evaluating Disentangled uniCOIL (coming soon)
+- Evaluating Disentangled ColBERT (coming soon)
+- Evaluating Disentangled BERT re-ranker (coming soon)
 
 
 <!-- ### Generic Relevance Estimation: Training REM 
@@ -372,10 +375,10 @@ This powerful codebase not only supports Disentangled Neural Ranking, but also v
   - [Training Dense Retrieval models on Dureader](./examples/dense/chinese-dureader/train_baseline.md)
   - [Evaluating Dense Retrieval models on English out-of-domain datasets](./examples/dense/english-marco/inference_baseline.md)
   - [Evaluating Dense Retrieval models on Chinese out-of-domain datasets](./examples/dense/chinese-dureader/inference_baseline.md)
-- uniCOIL
-- SPLADE
-- ColBERT
-- BERT Re-rankers
+- uniCOIL (coming soon)
+- SPLADE (coming soon)
+- ColBERT (coming soon)
+- BERT Re-rankers (coming soon)
 
 
 ## Citation
