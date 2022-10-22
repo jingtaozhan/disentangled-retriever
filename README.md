@@ -264,8 +264,8 @@ tensor([[107.6821, 101.4270],
 
 We will use various datasets to show how disentangled modeling facilitates flexible domain adaption. Before the demonstration, please download and preprocess the corresponding datasets. Here we provide detailed instructions:
 
-- [Preparing English training data and out-of-domain test sets](./examples/dense-mlm/english-marco/prepare_dataset/README.md)
-- [Preparing Chinese training data and out-of-domain test sets](./examples/dense-mlm/chinese-dureader/prepare_dataset/README.md)
+- [Preparing English training data and out-of-domain test sets](./examples/prepare_dataset/english-marco/README.md)
+- [Preparing Chinese training data and out-of-domain test sets](./examples/prepare_dataset/chinese-dureader/README.md)
 
 
 ## Zero-shot Domain Adaption
@@ -296,7 +296,11 @@ python -m torch.distributed.launch --nproc_per_node 4 \
     --corpus_path ... --query_path ... ... ...
 ```
 
-We give an adaption example [here](./examples/dense-mlm/english-marco/adapt_domain.md) with detailed instructions. Please trying this example before using our methods on your own datasets.
+We give two adaption examples. They train a separate DAM in the target domain and re-use our released REMs. 
+- [Adapting to an English dataset](./examples/domain_adapt/english-marco/adapt_to_new_domain.md)
+- [Adapting to a Chinese dataset](./examples/domain_adapt/chinese-dureader/adapt_to_new_domain.md)
+
+Please try these examples before using our methods on your own datasets.
 
 ## Few-shot Domain Adaption
 
@@ -314,17 +318,23 @@ To directly use this codebase for training, you need to convert your dataformat 
 - [Optional] hard negative file for contrastive training: each line is `qid   neg_docid1 neg_docid2 ...'. qid and neg_docids are separated by tab. neg_docids are separated by space.
 - [Optional] soft labels for knowledge distillation: a pickle file containing a dict: {qid: {docid: score}}. It should contain the soft labels of positive pairs and of several negative pairs.
 
-If you still have questions about the data formatting, you can check [how we convert MS MARCO](./examples/dense-mlm/english-marco/prepare_dataset/README.md#ms-marco-passage-ranking).
+If you still have questions about the data formatting, you can check [how we convert MS MARCO](./examples/prepare_dataset/english-marco/README.md#ms-marco-passage-ranking).
 
 With formatted supervised data, now you can train a REM module. We use a disentangled finetuning trick: first training a DAM module to capture domain-specific features and then training the REM module to learn domain-invariant matching patterns. 
-We provide two training examples, [one](./examples/dense-mlm/english-marco/train_rem.md) on English MS MARCO and [one](./examples/dense-mlm/chinese-dureader/train_rem.md) on Chinese Dureader. 
+
+Here we provide instructions about training REMs for different ranking methods.
+- Train REM for Dense Retrieval: [on English MS MARCO](./examples/dense/english-marco/train_rem.md) | [on Chinese Dureader](./examples/dense/chinese-dureader/train_rem.md)
+- Train REM for uniCOIL: [on English] [on Chinese]
+- Train REM for SPLADE: [on English] [on Chinese]
+- Train REM for ColBERT: [on English] [on Chinese]
+- Train REM for BERT re-ranker: [on English] [on Chinese]
 
 ## Reproducing Results with Released Checkpoints
 
 We provide commands for reproducing the various results in our [paper](https://arxiv.org/pdf/2208.05753.pdf).
 - Evaluating Disentangled Dense Retrieval
-  - [Evaluating Disentangled Dense Retrieval on English out-of-domain datasets](./examples/dense-mlm/english-marco/inference.md)
-  - [Evaluating Disentangled Dense Retrieval on Chinese out-of-domain datasets](./examples/dense-mlm/chinese-dureader/inference.md)
+  - [Evaluating Disentangled Dense Retrieval on English out-of-domain datasets](./examples/dense/english-marco/inference.md)
+  - [Evaluating Disentangled Dense Retrieval on Chinese out-of-domain datasets](./examples/dense/chinese-dureader/inference.md)
 - Evaluating Disentangled uniCOIL
 - Evaluating Disentangled SPLADE
 - Evaluating Disentangled ColBERT
@@ -358,10 +368,10 @@ With a ready REM module, Domain Adaption Module (DAM) is trained unsupervisedly 
 This powerful codebase not only supports Disentangled Neural Ranking, but also vanilla Neural Ranking models. You can easily reproduce state-of-the-art Dense Retrieval, uniCOIL, SPLADE, ColBERT, and BERT rerankers using this codebase! The instructions are provided as below.
 
 - Dense Retrieval
-  - [Training Dense Retrieval models on MS MARCO](./examples/dense-mlm/english-marco/train_baseline.md)
-  - [Training Dense Retrieval models on Dureader](./examples/dense-mlm/chinese-dureader/train_baseline.md)
-  - [Evaluating Dense Retrieval models on English out-of-domain datasets](./examples/dense-mlm/english-marco/inference_baseline.md)
-  - [Evaluating Dense Retrieval models on Chinese out-of-domain datasets](./examples/dense-mlm/chinese-dureader/inference_baseline.md)
+  - [Training Dense Retrieval models on MS MARCO](./examples/dense/english-marco/train_baseline.md)
+  - [Training Dense Retrieval models on Dureader](./examples/dense/chinese-dureader/train_baseline.md)
+  - [Evaluating Dense Retrieval models on English out-of-domain datasets](./examples/dense/english-marco/inference_baseline.md)
+  - [Evaluating Dense Retrieval models on Chinese out-of-domain datasets](./examples/dense/chinese-dureader/inference_baseline.md)
 - uniCOIL
 - SPLADE
 - ColBERT
