@@ -1,35 +1,8 @@
 # Generic Relevance Estimation
 
-## Unsupervisedly train DAM 
+Here are the instructions to train a generic REM module for Dense Retrieval.
 
-```bash
-output_dir="./data/dense-mlm/english-marco/train_rem/dam"
-
-python -m torch.distributed.launch --nproc_per_node 4 \
-    -m disentangled_retriever.dense.adapt.run_adapt_with_mlm \
-    --corpus_path ./data/datasets/msmarco-passage/corpus.tsv \
-    --output_dir $output_dir \
-    --model_name_or_path bert-base-uncased \
-    --logging_first_step \
-    --logging_steps 50 \
-    --max_seq_length 100 \
-    --per_device_train_batch_size 64 \
-    --gradient_accumulation_steps 4 \
-    --warmup_steps 1000 \
-    --fp16 \
-    --learning_rate 5e-5 \
-    --max_steps 100000 \
-    --dataloader_drop_last \
-    --overwrite_output_dir \
-    --dataloader_num_workers 16 \
-    --weight_decay 0.01 \
-    --lr_scheduler_type "constant_with_warmup" \
-    --save_strategy "steps" \
-    --save_steps 10000 \
-    --optim adamw_torch 
-``` 
-
-The trained model is actually our uploaded `jingtao/DAM-bert_base-mlm-msmarco'. In the following, we will use this uploaded version to initialize the Transformer backbone. 
+To make the REM module generic, we train a source DAM. The instructions for training the source DAM is available [here](../../domain-adapt/english-marco/train_source_dam.md). If you don't want to repeat this process, you can directly use our released source DAM `jingtao/DAM-bert_base-mlm-msmarco`. The following commands use this released source DAM for training REM.
 
 ## Contrastively train REM 
 

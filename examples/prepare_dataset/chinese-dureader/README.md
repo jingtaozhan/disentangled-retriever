@@ -6,11 +6,11 @@ Dureader contains passages from web pages and queries from search logs. It is or
 
 First, download Dureader dataset.
 ```bash
-sh ./examples/dense-mlm/chinese-dureader/prepare_dataset/download_dureader.sh
+sh ./examples/prepare_dataset/chinese-dureader/download_dureader.sh
 ```
 Next, transform the original Question-Answering dataset into a retrieval dataset. The questions are queries, and the `most related' paragraphs are relevant passages. We prepend the titles to the begining of the passages.
 ```
-python ./examples/dense-mlm/chinese-dureader/prepare_dataset/process_dureader.py ./data/datasets/dureader/preprocessed ./data/datasets/dureader
+python ./examples/prepare_dataset/chinese-dureader/process_dureader.py ./data/datasets/dureader/preprocessed ./data/datasets/dureader
 ```
 The dataset is saved in `data/datasets/dureader'.
 
@@ -57,5 +57,5 @@ unzip test_candidates.zip
 
 cd ../../../..
 # process 
-python ./examples/dense-mlm/chinese-dureader/prepare_dataset/process_cmedqav2.py ./data/datasets/cmedqav2/cMedQA2 ./data/datasets/cmedqav2 
+python ./examples/prepare_dataset/chinese-dureader/process_cmedqav2.py ./data/datasets/cmedqav2/cMedQA2 ./data/datasets/cmedqav2 
 ```
