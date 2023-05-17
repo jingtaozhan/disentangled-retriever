@@ -244,7 +244,7 @@ tokenizer = AutoTokenizer.from_pretrained(DAM_NAME, config=config)
 model = AutoDenseModel.from_pretrained(DAM_NAME, config=config)
 adapter_name = model.load_adapter(REM_URL)
 model.set_active_adapters(adapter_name)
-model.merge_lora(adapter_name)
+model.merge_adapter(adapter_name)
 
 ## Let's try to compute the similarities
 queries  = ["When will the COVID-19 pandemic end?", "What are the impacts of COVID-19 pandemic to society?"]
